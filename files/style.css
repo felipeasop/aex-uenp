@@ -1,0 +1,199 @@
+/* ===== Lua e Flor · tokens (extraídos da logo) ===== */
+:root{
+  --creme:#FBF3E6; --creme-2:#F4E6D0; --papel:#FFFBF5;
+  --ouro:#EBBB66; --ouro-esc:#C99236;
+  --lilas:#BBA6DD; --lilas-claro:#E9E1F5; --lilas-esc:#7F66AE;
+  --salvia:#8C9C6C; --salvia-claro:#E4E9D4;
+  --cafe:#4A3020; --cafe-2:#7A6350; --linha:#DFCDB0;
+  --serif:'Lora',Georgia,serif; --sans:'Nunito',system-ui,sans-serif;
+  --raio:22px; --sombra:0 10px 30px rgba(74,48,32,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--creme);color:var(--cafe);font:400 1rem/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+body.travado{overflow:hidden}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--lilas);outline-offset:3px;border-radius:8px}
+.link{background:none;border:0;padding:0;color:var(--lilas-esc);text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.centro{display:block;text-align:center;margin-top:14px}
+.nota{font-size:.88rem;color:var(--cafe-2);margin:10px 0 0}
+.vazio{grid-column:1/-1;text-align:center;color:var(--cafe-2);padding:48px 0}
+
+/* ===== botões ===== */
+.btn,.btn-comprar{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:999px;padding:14px 22px;font-weight:700;letter-spacing:.01em;transition:transform .15s,background .2s}
+.btn:hover,.btn-comprar:hover:not(:disabled){transform:translateY(-1px)}
+.btn-ouro,.btn-comprar[data-status="disponivel"]{background:var(--ouro);color:var(--cafe)}
+.btn-ouro:hover,.btn-comprar[data-status="disponivel"]:hover{background:#F2C77C}
+.btn-lilas,.btn-comprar[data-status="encomenda"]{background:var(--lilas);color:var(--cafe)}
+.btn-lilas:hover,.btn-comprar[data-status="encomenda"]:hover{background:#C9B8E6}
+.btn-comprar:disabled{background:#E7DDCF;color:#8C7B69;cursor:not-allowed}
+
+/* ===== cabeçalho ===== */
+.topo{position:sticky;top:0;z-index:20;background:rgba(251,243,230,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--linha)}
+.topo-int{max-width:1480px;margin:auto;padding:10px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.marca{display:flex;align-items:center;gap:12px;text-decoration:none}
+.marca img{border-radius:50%}
+.marca-txt{display:flex;flex-direction:column;line-height:1.1}
+.marca-txt strong{font-family:var(--serif);font-size:1.45rem}
+.marca-txt small{color:var(--cafe-2);letter-spacing:.28em;font-size:.68rem}
+.menu{display:flex;align-items:center;gap:6px}
+.menu a{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:600;position:relative}
+.menu a:hover{background:var(--creme-2)}
+.menu .menu-entrar{background:var(--lilas-claro)}
+.selo{background:var(--ouro);color:var(--cafe);font-size:.72rem;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 5px}
+
+.avisos{max-width:1480px;margin:14px auto 0;padding:0 28px}
+.aviso{margin:0;padding:12px 18px;border-radius:14px;background:var(--salvia-claro);border:1px solid var(--salvia)}
+.aviso.error{background:#F6DDD6;border-color:#C98B7B}
+
+/* ===== intro ===== */
+.intro{text-align:center;padding:48px 24px 8px;max-width:760px;margin:auto}
+.intro h1{font-size:clamp(1.8rem,4vw,2.7rem)}
+.intro p{color:var(--cafe-2);margin:12px 0 0;font-size:1.08rem}
+
+/* ===== loja: filtros + grade ===== */
+.loja{max-width:1480px;margin:auto;padding:32px 28px 72px;display:grid;grid-template-columns:250px 1fr;gap:44px;align-items:start}
+.filtros{position:sticky;top:96px;background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:22px 22px 14px;box-shadow:0 0 0 6px var(--creme),0 0 0 7px var(--linha)}
+.filtros-topo{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.filtros h2{font-size:1.2rem}
+.filtros fieldset{border:0;border-top:1px dashed var(--linha);margin:12px 0 0;padding:12px 0 6px}
+.filtros legend{font-family:var(--serif);font-weight:600;padding:0 8px 0 0;float:left;width:100%;margin-bottom:6px}
+.check{display:flex;align-items:center;gap:11px;padding:7px 0;cursor:pointer;clear:both}
+.check input{appearance:none;width:22px;height:22px;border:2px solid var(--linha);border-radius:8px;background:var(--creme);display:grid;place-items:center;flex:none;transition:.15s;cursor:pointer}
+.check input:checked{background:var(--lilas);border-color:var(--lilas-esc)}
+.check input:checked::after{content:"";width:6px;height:11px;border:solid var(--cafe);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.filtros-toggle{display:none}
+.contagem{margin:0 0 16px;color:var(--cafe-2);font-size:.95rem}
+
+.produtos{display:grid;grid-template-columns:repeat(4,1fr);gap:30px 26px}
+.card{background:none;border:0;padding:0;text-align:left;display:flex;flex-direction:column;gap:12px}
+.card[hidden]{display:none}
+.card-foto{position:relative;aspect-ratio:1;border-radius:var(--raio);overflow:hidden;background:var(--creme-2);border:1px solid var(--linha);transition:transform .25s,box-shadow .25s}
+.card-foto img{width:100%;height:100%;object-fit:cover}
+.card:hover .card-foto{transform:translateY(-4px);box-shadow:var(--sombra)}
+.card-nome{font-family:var(--serif);font-weight:600;font-size:1.12rem;line-height:1.3}
+.card-preco{color:var(--cafe-2);font-weight:700;margin-top:-6px}
+.card[data-status="esgotado"] img{filter:grayscale(.6);opacity:.7}
+
+.chip{display:inline-block;border-radius:999px;padding:3px 12px;font-size:.78rem;font-weight:700}
+.card-foto .chip{position:absolute;top:12px;left:12px}
+.chip-disponivel{background:var(--salvia-claro);color:#4F5D36}
+.chip-encomenda{background:var(--lilas-claro);color:#5B4686}
+.chip-esgotado{background:#EADFD2;color:#7A6350}
+
+/* ===== tela de produto (sobreposição) ===== */
+.overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px;background:rgba(58,38,24,.5);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:aparece .2s ease}
+.overlay[hidden]{display:none}
+@keyframes aparece{from{opacity:0}}
+@keyframes sobe{from{opacity:0;transform:translateY(14px) scale(.98)}}
+.modal{position:relative;width:min(1120px,100%);max-height:94vh;overflow:auto;background:var(--papel);border-radius:28px;padding:40px;display:grid;grid-template-columns:1.2fr 1fr;grid-template-areas:"galeria info" "desc desc";gap:32px 38px;box-shadow:0 0 0 7px var(--papel),0 0 0 8px var(--linha),0 30px 80px rgba(0,0,0,.3);animation:sobe .28s ease}
+.modal-fechar{position:absolute;top:14px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--linha);background:var(--creme);font-size:1.5rem;line-height:1;z-index:2}
+.modal-fechar:hover{background:var(--creme-2)}
+.galeria{grid-area:galeria;display:grid;grid-template-columns:68px 1fr;gap:12px;align-self:start}
+.miniaturas{display:flex;flex-direction:column;gap:10px}
+.miniaturas button{padding:0;border:2px solid var(--linha);border-radius:14px;overflow:hidden;aspect-ratio:1;background:var(--creme-2)}
+.miniaturas button[aria-current="true"]{border-color:var(--lilas-esc)}
+.miniaturas img,.foto-grande img{width:100%;height:100%;object-fit:cover}
+.foto-grande{aspect-ratio:1;border-radius:20px;overflow:hidden;border:1px solid var(--linha);background:var(--creme-2)}
+.info{grid-area:info;display:flex;flex-direction:column;gap:16px}
+.caixa{border:1px solid var(--linha);border-radius:20px;padding:20px 22px;background:var(--creme)}
+.caixa-nome{margin-right:44px}
+.caixa-nome h2{font-size:1.5rem}
+.preco{margin:8px 0 0;font-weight:800;font-size:1.25rem;color:var(--ouro-esc)}
+.chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0 0 12px}
+.chips li{background:var(--salvia-claro);color:#4F5D36;border-radius:999px;padding:4px 14px;font-size:.85rem;font-weight:700}
+.tempo{margin:0 0 18px;color:var(--cafe-2)}
+.tempo strong{color:var(--cafe)}
+.descricao{grid-area:desc;border-top:1px dashed var(--linha);padding-top:20px}
+.descricao h3{font-size:1.15rem;margin-bottom:8px}
+.descricao p{margin:0;max-width:70ch;color:var(--cafe-2);white-space:pre-line}
+
+/* ===== páginas internas ===== */
+.pagina-int{max-width:1100px;margin:auto;padding:44px 28px 80px}
+.titulo-pag{font-size:2.2rem;margin-bottom:28px}
+.carrinho{display:grid;grid-template-columns:1fr 340px;gap:36px;align-items:start}
+.itens{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.item{display:grid;grid-template-columns:96px 1fr auto 100px auto;gap:18px;align-items:center;background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:14px 18px 14px 14px}
+.item img{width:96px;height:96px;object-fit:cover;border-radius:16px;background:var(--creme-2)}
+.item h2{font-size:1.1rem;margin-bottom:6px}
+.item-unit{margin:6px 0 0;color:var(--cafe-2);font-size:.9rem}
+.item-total{margin:0;font-weight:800;text-align:right}
+.qtd{display:flex;align-items:center;gap:6px;border:1px solid var(--linha);border-radius:999px;padding:3px;background:var(--creme)}
+.qtd button{width:32px;height:32px;border-radius:50%;border:0;background:var(--lilas-claro);font-size:1.1rem;font-weight:700}
+.qtd output{min-width:24px;text-align:center;font-weight:700}
+.resumo{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:26px;box-shadow:0 0 0 6px var(--creme),0 0 0 7px var(--linha);position:sticky;top:100px}
+.resumo h2{font-size:1.3rem;margin-bottom:14px}
+.resumo dl{margin:0 0 6px}
+.resumo dl div{display:flex;justify-content:space-between;padding:6px 0;color:var(--cafe-2)}
+.resumo dt,.resumo dd{margin:0}
+.resumo-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--linha);padding-top:14px;margin:8px 0 20px}
+.resumo-total strong{font-family:var(--serif);font-size:1.5rem}
+.estado-vazio,.confirma{text-align:center;display:grid;justify-items:center;gap:14px;max-width:520px;margin:auto}
+.estado-vazio img,.confirma img{border-radius:50%}
+.estado-vazio .btn,.confirma .btn{width:auto;padding-inline:36px}
+.confirma h1{font-size:2.2rem}
+.lead{color:var(--cafe-2);margin:0;font-size:1.08rem}
+.resumo-conf{width:100%;text-align:left;position:static;margin:10px 0}
+.pedido-n{margin:0 0 10px}
+.itens-conf{list-style:none;margin:0;padding:0}
+.itens-conf li{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px dashed var(--linha)}
+.itens-conf em{font-style:normal;margin-left:8px}
+
+/* login */
+.pagina-auth{display:grid;place-items:start center}
+.auth{width:min(440px,100%);text-align:center;background:var(--papel);border:1px solid var(--linha);border-radius:28px;padding:34px 32px 38px;box-shadow:0 0 0 7px var(--creme),0 0 0 8px var(--linha)}
+.auth img{margin:0 auto 10px;border-radius:50%}
+.auth h1{font-size:1.6rem;margin-bottom:20px}
+.abas{display:grid;grid-template-columns:1fr 1fr;background:var(--creme-2);border-radius:999px;padding:4px;margin-bottom:22px}
+.abas button{border:0;background:none;padding:10px;border-radius:999px;font-weight:700;color:var(--cafe-2)}
+.abas button[aria-selected="true"]{background:var(--papel);color:var(--cafe);box-shadow:0 2px 8px rgba(74,48,32,.12)}
+.form{display:grid;gap:16px;text-align:left}
+.form[hidden]{display:none}
+.form label{display:grid;gap:6px;font-weight:700;font-size:.92rem}
+.form input{font:inherit;padding:12px 16px;border:1.5px solid var(--linha);border-radius:14px;background:var(--creme);color:var(--cafe)}
+.form input:focus{outline:none;border-color:var(--lilas-esc);box-shadow:0 0 0 4px var(--lilas-claro)}
+.form .btn{margin-top:6px}
+
+/* ===== rodapé ===== */
+.rodape{background:var(--creme-2);border-top:1px solid var(--linha)}
+.rodape-int{max-width:1480px;margin:auto;padding:44px 28px 26px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
+.rodape-marca{display:flex;align-items:center;gap:18px}
+.rodape-marca img{border-radius:50%}
+.rodape-marca p{margin:0;color:var(--cafe-2);font-family:var(--serif)}
+.rodape h3{font-size:1rem;margin-bottom:10px}
+.rodape-int a{display:block;text-decoration:none;color:var(--cafe-2);padding:3px 0}
+.rodape-int a:hover{color:var(--cafe);text-decoration:underline}
+.rodape-fim{margin:0;padding:16px;text-align:center;font-size:.85rem;color:var(--cafe-2);border-top:1px solid var(--linha)}
+
+/* ===== responsivo ===== */
+@media (max-width:1240px){.produtos{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:980px){
+  .loja{grid-template-columns:1fr;gap:20px}
+  .filtros-toggle{display:block;justify-self:start;background:var(--lilas-claro);border:1px solid var(--linha);border-radius:999px;padding:10px 22px;font-weight:700}
+  .filtros{display:none;position:static}
+  .filtros.aberto{display:block}
+  .produtos{grid-template-columns:repeat(2,1fr)}
+  .carrinho{grid-template-columns:1fr}
+  .resumo{position:static}
+}
+@media (max-width:760px){
+  .modal{grid-template-columns:1fr;grid-template-areas:"galeria" "info" "desc";padding:22px 18px;gap:20px}
+  .galeria{grid-template-columns:1fr}
+  .galeria .miniaturas{flex-direction:row;order:2}
+  .galeria .miniaturas button{width:58px}
+  .caixa-nome{margin-right:0}
+  .item{grid-template-columns:76px 1fr auto;grid-template-areas:"img info total" "img qtd rem"}
+  .item img{width:76px;height:76px;grid-area:img}
+  .item-info{grid-area:info}.qtd{grid-area:qtd;justify-self:start}.item-total{grid-area:total}.item form:last-child,.item > button[data-acao="remover"]{grid-area:rem;justify-self:end}
+  .rodape-int{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .topo-int{padding:8px 16px}.marca-txt small{display:none}.menu a{padding:8px 10px}
+  .loja,.pagina-int{padding-inline:16px}
+  .produtos{gap:22px 14px}.card-nome{font-size:1rem}
+  .overlay{padding:10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

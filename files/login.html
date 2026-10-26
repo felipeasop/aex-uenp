@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entrar · Lua e Flor</title>
+    <link rel="icon" href="Logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="pagina">
+        <header class="topo">
+            <div class="topo-int"><a class="marca" href="home.html"><img src="Logo.png" alt="" width="52"
+                        height="52"><span class="marca-txt"><strong>Lua e
+                            Flor</strong><small>amigurumis</small></span></a>
+                <nav class="menu" aria-label="Principal"><a href="home.html">Início</a><a href="carrinho.html">Carrinho
+                        <span class="selo" data-carrinho-qtd hidden>0</span></a></nav>
+            </div>
+        </header>
+        <main>
+            <section class="pagina-int pagina-auth">
+                <div class="auth"><img src="Logo.png" alt="" width="96" height="96">
+                    <h1>Bem-vinda(o) de volta</h1>
+                    <div class="abas" role="tablist"><button type="button" role="tab" aria-selected="true"
+                            data-aba="entrar">Entrar</button><button type="button" role="tab" aria-selected="false"
+                            data-aba="criar">Criar conta</button></div>
+                    <form class="form" data-painel="entrar"><label>E-mail<input type="email" name="email"
+                                autocomplete="email" required></label><label>Senha<input type="password" name="password"
+                                autocomplete="current-password" required></label><button class="btn btn-ouro"
+                            type="submit">Entrar</button></form>
+                    <form class="form" data-painel="criar" hidden><label>Nome<input type="text" name="nome"
+                                autocomplete="name" required></label><label>E-mail<input type="email" name="email"
+                                autocomplete="email" required></label><label>Senha<input type="password"
+                                name="password1" autocomplete="new-password" minlength="8"
+                                required></label><label>Confirmar senha<input type="password" name="password2"
+                                autocomplete="new-password" minlength="8" required></label><button class="btn btn-lilas"
+                            type="submit">Criar minha conta</button></form>
+                    <p class="nota">Modo de demonstração: os formulários não enviam dados para um servidor.</p>
+                </div>
+            </section>
+        </main>
+        <footer class="rodape">
+            <p class="rodape-fim">© 2026 Lua e Flor · Amigurumis</p>
+        </footer>
+    </div>
+    <script src="loja.js"></script>
+</body>
+
+</html>
