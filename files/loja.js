@@ -3,10 +3,11 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const LOGO = document.body.dataset.logo;
   const CATALOGO_PADRAO = [
-    { id: 1, nome: 'Coelhinha Lua', preco: '89,90', status: 'disponivel', categorias: ['Animais'], fotos: [LOGO], tempo: 'Pronta entrega', descricao: 'Coelhinha feita à mão com fio macio e acabamento delicado.' },
-    { id: 2, nome: 'Raposa do bosque', preco: '119,90', status: 'encomenda', categorias: ['Animais', 'Fantasia'], fotos: [LOGO], tempo: 'Até 10 dias úteis', descricao: 'Raposa artesanal, confeccionada sob encomenda.' },
-    { id: 3, nome: 'Cacto florido', preco: '59,90', status: 'disponivel', categorias: ['Plantas'], fotos: [LOGO], tempo: 'Pronta entrega', descricao: 'Um cacto simpático em crochê para alegrar sua estante.' },
-    { id: 4, nome: 'Estrelinha', preco: '74,90', status: 'esgotado', categorias: ['Fantasia'], fotos: [LOGO], tempo: 'Sob consulta', descricao: 'Uma estrelinha macia, feita à mão e atualmente indisponível.' }
+    { id: 5, nome: 'Amigurumi Hornet', preco: '149,90', status: 'encomenda', categorias: ['Animais', 'Fantasia'], fotos: ['produtos exemplo/amigurumi hornet.jpg'], tempo: 'Até 15 dias úteis', descricao: 'Amigurumi inspirado na personagem Hornet, confeccionado à mão sob encomenda.' },
+    { id: 6, nome: 'Chocalho Abelha', preco: '69,90', status: 'encomenda', categorias: ['Brinquedos', 'Animais'], fotos: ['produtos exemplo/chocalho abelha.jpg'], tempo: 'Até 10 dias úteis', descricao: 'Chocalho artesanal de abelhinha, com argola de madeira e detalhes em crochê.' },
+    { id: 7, nome: 'Chocalho Água-viva', preco: '69,90', status: 'encomenda', categorias: ['Brinquedos', 'Animais'], fotos: ['produtos exemplo/chocalho agua viva.jpg'], tempo: 'Até 10 dias úteis', descricao: 'Chocalho de água-viva feito em crochê, com argola de madeira.' },
+    { id: 8, nome: 'Móbile Fundo do Mar', preco: '249,90', status: 'encomenda', categorias: ['Decoração', 'Fantasia'], fotos: ['produtos exemplo/móbile fundo do mar.jpg'], tempo: 'Até 15 dias úteis', descricao: 'Móbile artesanal com criaturas marinhas em crochê e detalhes em madeira.' },
+    { id: 9, nome: 'Móbile Jardim', preco: '229,90', status: 'encomenda', categorias: ['Decoração', 'Plantas'], fotos: ['produtos exemplo/móbile jardim.jpg'], tempo: 'Até 15 dias úteis', descricao: 'Móbile de jardim com flores e abelhinhas em crochê, feito à mão.' }
   ];
   const catalogoEl = $('#dados-produtos');
   const produtos = catalogoEl ? JSON.parse(catalogoEl.textContent) : CATALOGO_PADRAO;
