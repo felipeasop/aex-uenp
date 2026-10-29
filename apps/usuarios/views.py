@@ -2,9 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.urls import reverse
 from .forms import LoginForm, CadastroClienteForm
-from .models import Usuario
 
 
 def login_view(request):
@@ -19,7 +17,7 @@ def login_view(request):
 
     # Se já estiver autenticado
     if request.user.is_authenticated:
-        if request.user.is_staff or request.user.is_superuser or request.user.tipo == Usuario.Tipo.ADMIN:
+        if request.user.is_staff or request.user.is_administrador:
             return redirect('/admin/')
         if next_url:
             return redirect(next_url)
@@ -36,14 +34,12 @@ def login_view(request):
             messages.success(request, f'Bem-vinda(o), {user.first_name or user.username}!')
 
             # Redirecionamento de administrador para o Django Admin
-            if user.is_staff or user.is_superuser or user.tipo == Usuario.Tipo.ADMIN:
+            if user.is_staff or user.is_administrador:
                 return redirect('/admin/')
 
             if next_url:
                 return redirect(next_url)
             return redirect('catalogo:home')
-        else:
-            active_tab = 'entrar'
 
     return render(request, 'usuarios/login.html', {
         'form_login': form_login,
@@ -74,8 +70,6 @@ def cadastro_view(request):
             if next_url:
                 return redirect(next_url)
             return redirect('catalogo:home')
-        else:
-            active_tab = 'criar'
 
     return render(request, 'usuarios/login.html', {
         'form_login': form_login,

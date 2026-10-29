@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from apps.usuarios.views import login_view, logout_view
 
 # Customização do Django Admin
 admin.site.site_header = 'Lua e Flor · Ateliê de Crochê'
@@ -17,11 +16,6 @@ urlpatterns = [
     path('', include('apps.catalogo.urls', namespace='catalogo')),
     path('vendas/', include('apps.vendas.urls', namespace='vendas')),
     path('conta/', include('apps.usuarios.urls', namespace='usuarios')),
-
-    # Atalhos convenientes para compatibilidade direta com os links do template
-    path('entrar/', login_view, name='atalho_login'),
-    path('login/', login_view, name='atalho_login_alt'),
-    path('sair/', logout_view, name='atalho_logout'),
 ]
 
 if settings.DEBUG:

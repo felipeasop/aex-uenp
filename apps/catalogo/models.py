@@ -68,10 +68,6 @@ class CicloEncomenda(models.Model):
         status = 'Aberto' if self.is_aberto else 'Fechado'
         return f'{self.nome} ({self.quantidade_atual}/{self.limite_maximo} vagas) - {status}'
 
-    def checar_limite(self):
-        """Retorna True se ainda houver vaga no ciclo."""
-        return self.is_aberto and (self.quantidade_atual < self.limite_maximo)
-
     def vagas_disponiveis(self):
         """Retorna quantas vagas ainda cabem no ciclo."""
         if not self.is_aberto:
@@ -85,9 +81,6 @@ class CicloEncomenda(models.Model):
     def adicionar_encomenda(self, quantidade=1):
         """Registra a entrada de uma nova encomenda no ciclo."""
         self.quantidade_atual += quantidade
-        if self.quantidade_atual >= self.limite_maximo:
-            # Atingiu o teto do ciclo
-            pass
         self.save()
 
     def fechar(self):
@@ -184,7 +177,7 @@ class Produto(models.Model):
             return 'disponivel'
         # Verifica se o ciclo vinculado (ou ciclo geral ativo) aceita encomendas
         ciclo = self.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
-        if ciclo and ciclo.checar_limite():
+        if ciclo and ciclo.cabe_encomenda():
             return 'encomenda'
         return 'esgotado'
 
@@ -277,15 +270,6 @@ class SolicitacaoProduto(models.Model):
         self.produto.save()
         self.save()
 
-    def recusar(self, admin_user, motivo):
-        self.status = self.Status.RECUSADO
-        self.administrador = admin_user
-        self.motivo_recusa = motivo
-        self.data_decisao = timezone.now()
-        self.produto.aprovado = False
-        self.produto.save()
-        self.save()
-
 
 class AvisoEstoque(models.Model):
     """
@@ -337,7 +321,3 @@ class Promocao(models.Model):
 
     def __str__(self):
         return f'{self.titulo} ({self.desconto_percentual}%)'
-
-    def esta_vigente(self):
-        hoje = timezone.now().date()
-        return self.is_ativa and (self.data_inicio <= hoje <= self.data_fim)

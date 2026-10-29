@@ -40,12 +40,11 @@ class Cupom(models.Model):
             return False, 'Este cupom está expirado.'
         if self.usos_atuais >= self.limite_uso:
             return False, 'Limite de usos deste cupom esgotado.'
-        if Decimal(str(subtotal)) < self.valor_minimo:
+        if subtotal < self.valor_minimo:
             return False, f'Valor mínimo para uso deste cupom é R$ {self.valor_minimo:.2f}.'
         return True, 'Cupom válido.'
 
     def calcular_desconto(self, subtotal):
-        subtotal = Decimal(str(subtotal))
         valido, _ = self.is_valido(subtotal)
         if not valido:
             return Decimal('0.00')
@@ -131,7 +130,7 @@ class ItemCarrinho(models.Model):
 
     @property
     def subtotal(self):
-        return Decimal(str(self.produto.preco)) * self.quantidade
+        return self.produto.preco * self.quantidade
 
 
 class StatusPedido(models.Model):
@@ -251,7 +250,7 @@ class ItemPedido(models.Model):
 
     @property
     def subtotal(self):
-        return Decimal(str(self.preco_unitario)) * self.quantidade
+        return self.preco_unitario * self.quantidade
 
 
 class FilaProducao(models.Model):
@@ -271,12 +270,6 @@ class FilaProducao(models.Model):
 
     def __str__(self):
         return f'#{self.posicao} - {self.item_pedido.produto.nome} (Pedido {self.item_pedido.pedido.numero})'
-
-    @classmethod
-    def tempo_total_fila(cls):
-        """Calcula a soma de dias de trabalho atualmente na fila de produção."""
-        soma = cls.objects.aggregate(total=models.Sum('tempo_estimado_dias'))['total']
-        return soma or 0
 
 
 class NotificacaoWhatsapp(models.Model):

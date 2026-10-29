@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.templatetags.static import static
 from django.views.decorators.http import require_POST
-from .models import Produto, Tag, Colecao, AvisoEstoque, Favorito
+from .models import Produto, Tag, Colecao, AvisoEstoque
 
 
 def home_view(request):
@@ -70,21 +70,6 @@ def solicitar_aviso_estoque(request, produto_id):
         messages.success(request, f'Você será avisada(o) assim que o produto "{produto.nome}" voltar ao estoque!')
     else:
         messages.info(request, f'Você já solicitou aviso para o produto "{produto.nome}".')
-    return redirect('catalogo:home')
-
-
-@login_required
-@require_POST
-def alternar_favorito(request, produto_id):
-    """Adiciona ou remove um produto dos favoritos (Req. F25)."""
-    produto = get_object_or_404(Produto, id=produto_id)
-    favorito = Favorito.objects.filter(cliente=request.user, produto=produto).first()
-    if favorito:
-        favorito.delete()
-        messages.info(request, f'"{produto.nome}" removido dos seus favoritos.')
-    else:
-        Favorito.objects.create(cliente=request.user, produto=produto)
-        messages.success(request, f'"{produto.nome}" adicionado aos seus favoritos!')
     return redirect('catalogo:home')
 
 

@@ -1,4 +1,3 @@
-from datetime import date
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -38,25 +37,9 @@ class Usuario(AbstractUser):
         nome = self.get_full_name() or self.username
         return f'{nome} ({self.get_tipo_display()})'
 
-#=================== Authenticadores ===================
     @property
     def is_administrador(self):
         return self.tipo == self.Tipo.ADMIN or self.is_superuser
-
-    @property
-    def is_operador(self):
-        return self.tipo == self.Tipo.OPERADOR
-
-    @property
-    def is_cliente(self):
-        return self.tipo == self.Tipo.CLIENTE
-#========================================================
-    def is_aniversario(self):
-        """Verifica se a data atual coincide com o aniversário do cliente."""
-        if not self.data_nascimento:
-            return False
-        hoje = date.today()
-        return self.data_nascimento.day == hoje.day and self.data_nascimento.month == hoje.month
 
     def save(self, *args, **kwargs):
         # Garante que Administradores e Operadores tenham acesso ao painel de administração

@@ -13,12 +13,9 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'autocomplete': 'current-password', 'placeholder': '••••••••', 'required': True})
     )
 
-    # Tratamento de dados de requisições padrão do Django, muito trampo explicar
     def clean(self):
         cleaned_data = super().clean()
-        email = cleaned_data.get('email') # Não está como unique pois:
-            # Definição do username como o próprio e-mail: Ao cadastrar o cliente, o código atribui user.username = email.
-            # Como o username é obrigatoriamente único no banco, o banco de dados também acaba impedindo a duplicação.
+        email = cleaned_data.get('email')
         password = cleaned_data.get('password')
 
         if email and password:
