@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Lua e Flor · Ateliê de Amigurumis{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/Logo.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Estilos adicionais para mensagens do Django e status administrativo */
+        .mensagens-alerta {
+            max-width: 1100px;
+            margin: 1rem auto 0;
+            padding: 0 1.25rem;
+        }
+        .alerta {
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .alerta-success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .alerta-error, .alerta-danger { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        .alerta-warning { background-color: #fff8e1; color: #f57f17; border: 1px solid #ffecb3; }
+        .alerta-info { background-color: #e1f5fe; color: #0277bd; border: 1px solid #b3e5fc; }
+        .badge-admin {
+            background-color: #6a1b9a;
+            color: #fff !important;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            margin-left: 0.5rem;
+        }
+        .menu-usuario {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body data-logo="{% static 'img/Logo.png' %}">
+    <div id="pagina">
+        <header class="topo">
+            <div class="topo-int">
+                <a class="marca" href="{% url 'catalogo:home' %}" aria-label="Lua e Flor, início">
+                    <img src="{% static 'img/Logo.png' %}" alt="Logo Lua e Flor" width="52" height="52">
+                    <span class="marca-txt">
+                        <strong>Lua e Flor</strong>
+                        <small>amigurumis</small>
+                    </span>
+                </a>
+                <nav class="menu" aria-label="Principal">
+                    <a href="{% url 'catalogo:home' %}">Início</a>
+                    <a class="menu-carrinho" href="{% url 'vendas:carrinho' %}">
+                        Carrinho
+                        <span class="selo" data-carrinho-qtd {% if carrinho_total_itens == 0 %}hidden{% endif %}>{{ carrinho_total_itens }}</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                        <div class="menu-usuario">
+                            {% if user.is_staff or user.is_superuser or user.tipo == 'ADMIN' %}
+                                <a href="/admin/" class="badge-admin" title="Acessar o Django Admin">Painel Admin</a>
+                            {% endif %}
+                            <span>Olá, {{ user.first_name|default:user.username }}</span>
+                            <a class="menu-entrar" href="{% url 'usuarios:logout' %}">Sair</a>
+                        </div>
+                    {% else %}
+                        <a class="menu-entrar" href="{% url 'usuarios:login' %}">Entrar</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </header>
+
+        {% if messages %}
+            <div class="mensagens-alerta">
+                {% for message in messages %}
+                    <div class="alerta alerta-{{ message.tags|default:'info' }}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="rodape">
+            <div class="rodape-int">
+                <div class="rodape-marca">
+                    <img src="{% static 'img/Logo.png' %}" alt="Lua e Flor" width="84" height="84">
+                    <p>Feito à mão, ponto a ponto,<br>com muito carinho.</p>
+                </div>
+                <div>
+                    <h3>Loja</h3>
+                    <a href="{% url 'catalogo:home' %}">Todos os amigurumis</a>
+                    <a href="{% url 'vendas:carrinho' %}">Meu carrinho</a>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff or user.is_superuser or user.tipo == 'ADMIN' %}
+                            <a href="/admin/">Django Admin</a>
+                        {% endif %}
+                        <a href="{% url 'usuarios:logout' %}">Sair da conta</a>
+                    {% else %}
+                        <a href="{% url 'usuarios:login' %}">Minha conta</a>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3>Fale com a gente</h3>
+                    <a href="mailto:contato@luaeflor.com.br">contato@luaeflor.com.br</a>
+                </div>
+            </div>
+            <p class="rodape-fim">© 2026 Lua e Flor · Amigurumis</p>
+        </footer>
+    </div>
+
+    {% block modal %}{% endblock %}
+    {% block scripts %}
+        <script src="{% static 'js/loja.js' %}"></script>
+    {% endblock %}
+</body>
+
+</html>

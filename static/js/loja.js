@@ -117,9 +117,9 @@
     });
     $('#m-fechar').addEventListener('click', fechar);
     $('#m-comprar').addEventListener('click', () => {
-      adicionar($('#m-comprar').dataset.id);
+      const prodId = $('#m-comprar').dataset.id;
       fechar();
-      window.location.href = 'carrinho.html';
+      window.location.href = '/vendas/adicionar/' + prodId + '/';
     });
     overlay.addEventListener('click', e => { if (e.target === overlay) fechar(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) fechar(); });
@@ -208,15 +208,5 @@
   $$('.abas [data-aba]').forEach(b => b.addEventListener('click', () => {
     $$('.abas [data-aba]').forEach(x => x.setAttribute('aria-selected', x === b));
     $$('[data-painel]').forEach(p => (p.hidden = p.dataset.painel !== b.dataset.aba));
-  }));
-  $$('form[data-painel]').forEach(form => form.addEventListener('submit', event => {
-    event.preventDefault();
-    if (form.dataset.painel === 'criar' && form.elements.password1.value !== form.elements.password2.value) {
-      form.elements.password2.setCustomValidity('As senhas precisam ser iguais.');
-      form.reportValidity();
-      form.elements.password2.setCustomValidity('');
-      return;
-    }
-    window.location.href = 'confirmacao.html';
   }));
 })();

@@ -1,0 +1,5 @@
+.venv/bin/python manage.py runserver
+
+Loja: http://127.0.0.1:8000/
+Login: http://127.0.0.1:8000/conta/entrar/
+Django Admin: http://127.0.0.1:8000/admin/

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Entrar ou Cadastrar · Lua e Flor{% endblock %}
+
+{% block content %}
+<section class="pagina-int pagina-auth">
+    <div class="auth">
+        <img src="{% static 'img/Logo.png' %}" alt="Lua e Flor" width="96" height="96">
+        <h1>Bem-vinda(o) de volta</h1>
+
+        <div class="abas" role="tablist">
+            <button type="button" role="tab" id="tab-entrar" aria-selected="{% if active_tab == 'entrar' %}true{% else %}false{% endif %}" data-aba="entrar">
+                Entrar
+            </button>
+            <button type="button" role="tab" id="tab-criar" aria-selected="{% if active_tab == 'criar' %}true{% else %}false{% endif %}" data-aba="criar">
+                Criar conta
+            </button>
+        </div>
+
+        <!-- Formulário de Login -->
+        <form class="form" data-painel="entrar" method="post" action="{% url 'usuarios:login' %}" {% if active_tab != 'entrar' %}hidden{% endif %}>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <input type="hidden" name="btn_entrar" value="1">
+
+            {% if form_login.non_field_errors %}
+                <div style="color: #c62828; font-size: 0.85rem; margin-bottom: 0.75rem;">
+                    {{ form_login.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <label>
+                E-mail
+                <input type="email" name="email" value="{{ form_login.email.value|default:'' }}" autocomplete="email" required>
+            </label>
+            <label>
+                Senha
+                <input type="password" name="password" autocomplete="current-password" required>
+            </label>
+
+            <button class="btn btn-ouro" type="submit">Entrar</button>
+        </form>
+
+        <!-- Formulário de Criação de Conta -->
+        <form class="form" data-painel="criar" method="post" action="{% url 'usuarios:cadastro' %}" {% if active_tab != 'criar' %}hidden{% endif %}>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            {% if form_cadastro.non_field_errors %}
+                <div style="color: #c62828; font-size: 0.85rem; margin-bottom: 0.75rem;">
+                    {{ form_cadastro.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <label>
+                Nome Completo
+                <input type="text" name="nome" value="{{ form_cadastro.nome.value|default:'' }}" autocomplete="name" required>
+                {% if form_cadastro.nome.errors %}
+                    <small style="color: #c62828;">{{ form_cadastro.nome.errors.0 }}</small>
+                {% endif %}
+            </label>
+            <label>
+                E-mail
+                <input type="email" name="email" value="{{ form_cadastro.email.value|default:'' }}" autocomplete="email" required>
+                {% if form_cadastro.email.errors %}
+                    <small style="color: #c62828;">{{ form_cadastro.email.errors.0 }}</small>
+                {% endif %}
+            </label>
+            <label>
+                Telefone / WhatsApp (opcional)
+                <input type="text" name="telefone" value="{{ form_cadastro.telefone.value|default:'' }}" placeholder="(00) 00000-0000">
+            </label>
+            <label>
+                Senha
+                <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+                {% if form_cadastro.password.errors %}
+                    <small style="color: #c62828;">{{ form_cadastro.password.errors.0 }}</small>
+                {% endif %}
+            </label>
+            <label>
+                Confirmar senha
+                <input type="password" name="confirmar_senha" autocomplete="new-password" minlength="8" required>
+                {% if form_cadastro.confirmar_senha.errors %}
+                    <small style="color: #c62828;">{{ form_cadastro.confirmar_senha.errors.0 }}</small>
+                {% endif %}
+            </label>
+
+            <button class="btn btn-lilas" type="submit">Criar minha conta</button>
+        </form>
+
+        <p class="nota">
+            Clientes autenticados podem acompanhar o estado de produção e receber novidades personalizadas.
+        </p>
+    </div>
+</section>
+{% endblock %}

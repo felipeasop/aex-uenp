@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Compra Confirmada · Lua e Flor{% endblock %}
+
+{% block content %}
+<section class="pagina-int">
+    <div class="confirma">
+        <img src="{% static 'img/Logo.png' %}" alt="Lua e Flor" width="120" height="120">
+        <h1>Pedido recebido!</h1>
+        <p class="lead">Obrigada por escolher a Lua e Flor. Seu amigurumi já está a caminho do nosso ateliê.</p>
+
+        <div class="resumo resumo-conf" id="resumo-pedido" style="max-width: 580px; margin: 1.5rem auto; text-align: left;">
+            <p class="pedido-n" style="font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 2px solid #f0e6d2; padding-bottom: 0.5rem;">
+                Pedido: <strong>{{ pedido.numero }}</strong>
+            </p>
+            
+            <p style="margin-bottom: 0.5rem; font-size: 0.95rem;">
+                <strong>Cliente:</strong> {{ pedido.cliente.get_full_name|default:pedido.cliente.username }}
+            </p>
+            <p style="margin-bottom: 0.5rem; font-size: 0.95rem;">
+                <strong>Status:</strong> 
+                <span style="background-color: #fff3e0; color: #e65100; padding: 2px 8px; border-radius: 8px; font-weight: bold;">
+                    {{ pedido.status.nome }}
+                </span>
+            </p>
+            <p style="margin-bottom: 1rem; font-size: 0.95rem;">
+                <strong>Local de Entrega:</strong> {{ pedido.rua }}{% if pedido.numero_end %}, nº {{ pedido.numero_end }}{% endif %} - {{ pedido.bairro }}, {{ pedido.cidade }}
+            </p>
+
+            <h3 style="font-size: 1.05rem; margin: 1rem 0 0.5rem; color: #4a2c2a;">Itens Adquiridos:</h3>
+            <ul class="itens-conf" id="itens-confirmacao" style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                {% for item in pedido.itens.all %}
+                    <li style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid #f9f9f9;">
+                        <span>
+                            {{ item.quantidade }}× {{ item.produto.nome }}
+                            {% if item.is_encomenda %}
+                                <br><small style="color: #c77800;">(Sob encomenda - Status: {{ item.get_status_producao_display }})</small>
+                            {% else %}
+                                <br><small style="color: #2e7d32;">(Pronta entrega)</small>
+                            {% endif %}
+                        </span>
+                        <strong>R$ {{ item.subtotal|floatformat:2 }}</strong>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div style="border-top: 1px dashed #ccc; padding-top: 0.75rem;">
+                <p class="resumo-total">
+                    <span>Total a Pagar</span>
+                    <strong id="total-confirmacao">R$ {{ pedido.valor_total|floatformat:2 }}</strong>
+                </p>
+            </div>
+
+            <div style="background-color: #fcf8f2; border-left: 4px solid #d4af37; padding: 0.75rem 1rem; margin-top: 1rem; border-radius: 4px;">
+                <h4 style="margin: 0 0 0.3rem 0; font-size: 0.95rem; color: #6a4a15;">
+                    Instruções de Pagamento ({{ pedido.get_metodo_pagamento_display }})
+                </h4>
+                {% if pedido.metodo_pagamento == 'PIX' %}
+                    <p style="font-size: 0.85rem; color: #555; margin: 0;">
+                        Chave Pix do Ateliê: <strong>contato@luaeflor.com.br</strong><br>
+                        Após o pagamento, envie o comprovante para nosso WhatsApp ou aguarde a confirmação automática pelo painel.
+                    </p>
+                {% else %}
+                    <p style="font-size: 0.85rem; color: #555; margin: 0;">
+                        Pagamento no ato da entrega local via cartão ou maquininha.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <a class="btn btn-ouro" href="{% url 'catalogo:home' %}">Voltar à loja</a>
+    </div>
+</section>
+{% endblock %}

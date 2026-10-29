@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carrinho · Lua e Flor{% endblock %}
+
+{% block content %}
+<section class="pagina-int">
+    <h1 class="titulo-pag">Meu carrinho</h1>
+
+    {% if itens %}
+        <div class="carrinho" id="carrinho-conteudo">
+            <ul class="itens" id="itens-carrinho">
+                {% for item in itens %}
+                    <li class="item" data-id="{{ item.produto.id }}">
+                        {% if item.produto.foto_principal %}
+                            <img src="{{ item.produto.foto_principal.imagem.url }}" alt="{{ item.produto.nome }}">
+                        {% else %}
+                            <img src="{% static 'img/Logo.png' %}" alt="{{ item.produto.nome }}">
+                        {% endif %}
+                        <div class="item-info">
+                            <h2>{{ item.produto.nome }}</h2>
+                            <p class="item-unit">R$ {{ item.produto.preco_formatado }} cada</p>
+                            {% if item.produto.status_disponibilidade == 'encomenda' %}
+                                <small style="color: #c77800; font-weight: 600;">Peça sob encomenda ({{ item.produto.tempo_formatado }})</small>
+                            {% endif %}
+                        </div>
+                        <div class="qtd">
+                            <a href="{% url 'vendas:atualizar_item_carrinho' item.id %}?acao=menos" 
+                               class="btn-qtd" 
+                               style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:1px solid #ccc; border-radius:50%; color:#333; font-weight:bold;">−</a>
+                            <output style="font-weight: bold; min-width: 24px; text-align: center;">{{ item.quantidade }}</output>
+                            <a href="{% url 'vendas:atualizar_item_carrinho' item.id %}?acao=mais" 
+                               class="btn-qtd" 
+                               style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:1px solid #ccc; border-radius:50%; color:#333; font-weight:bold;">+</a>
+                        </div>
+                        <p class="item-total">R$ {{ item.subtotal|floatformat:2 }}</p>
+                        <a href="{% url 'vendas:atualizar_item_carrinho' item.id %}?acao=remover" class="link" style="color: #c62828;">Remover</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <aside class="resumo">
+                <h2>Resumo da Compra</h2>
+                <dl>
+                    <div>
+                        <dt>Subtotal</dt>
+                        <dd id="subtotal">R$ {{ subtotal|floatformat:2 }}</dd>
+                    </div>
+                    {% if desconto > 0 %}
+                    <div>
+                        <dt style="color: #2e7d32;">Desconto ({{ carrinho.cupom.codigo }})</dt>
+                        <dd style="color: #2e7d32;">- R$ {{ desconto|floatformat:2 }}</dd>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <dt>Entrega</dt>
+                        <dd>Entrega local</dd>
+                    </div>
+                </dl>
+
+                <!-- Formulário de Cupom de Desconto (Req. F11) -->
+                <div style="margin: 1rem 0; padding: 0.75rem 0; border-top: 1px dashed #ddd; border-bottom: 1px dashed #ddd;">
+                    {% if carrinho.cupom %}
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.85rem; color: #2e7d32;">Cupom <strong>{{ carrinho.cupom.codigo }}</strong> aplicado!</span>
+                            <a href="{% url 'vendas:remover_cupom' %}" class="link" style="font-size: 0.8rem; color: #c62828;">Remover</a>
+                        </div>
+                    {% else %}
+                        <form action="{% url 'vendas:aplicar_cupom' %}" method="post" style="display: flex; gap: 0.5rem;">
+                            {% csrf_token %}
+                            <input type="text" name="codigo" placeholder="Cupom de desconto" style="flex: 1; padding: 0.4rem 0.6rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem;" required>
+                            <button type="submit" class="btn" style="background-color: #6a1b9a; color: white; padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 6px; border: none; cursor: pointer;">Aplicar</button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                <p class="resumo-total">
+                    <span>Total</span>
+                    <strong id="total">R$ {{ total|floatformat:2 }}</strong>
+                </p>
+
+                {% if user.is_authenticated %}
+                    <a class="btn btn-ouro" id="finalizar" href="{% url 'vendas:checkout' %}">Avançar para Entrega</a>
+                {% else %}
+                    <a class="btn btn-ouro" id="finalizar" href="{% url 'usuarios:login' %}?next={% url 'vendas:checkout' %}">Entrar para finalizar</a>
+                {% endif %}
+
+                <p class="nota">Cada peça é produzida com todo carinho no nosso ateliê.</p>
+                <a class="link centro" href="{% url 'catalogo:home' %}">Continuar comprando</a>
+            </aside>
+        </div>
+    {% else %}
+        <div class="estado-vazio" id="carrinho-vazio">
+            <img src="{% static 'img/Logo.png' %}" alt="Lua e Flor" width="120" height="120">
+            <p>Seu carrinho está vazio.</p>
+            <a class="btn btn-ouro" href="{% url 'catalogo:home' %}">Ver amigurumis</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

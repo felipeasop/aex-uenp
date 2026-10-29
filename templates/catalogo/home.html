@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Amigurumis feitos à mão · Lua e Flor{% endblock %}
+
+{% block content %}
+<section class="intro">
+    <h1>Pequenos companheiros, feitos à mão</h1>
+    <p>Cada amigurumi nasce de um novo fio, sob a luz da lua e com um tantinho de flor.</p>
+</section>
+
+<div class="loja">
+    <button class="filtros-toggle" type="button" aria-expanded="false" aria-controls="filtros">Filtros</button>
+    <aside class="filtros" id="filtros" aria-label="Filtros">
+        <div class="filtros-topo">
+            <h2>Filtros</h2>
+            <button type="button" class="link" id="limpar-filtros">Limpar</button>
+        </div>
+        
+        <fieldset data-grupo="categoria">
+            <legend>Categorias</legend>
+            {% for tag in tags %}
+                <label class="check">
+                    <input type="checkbox" value="{{ tag.slug }}">
+                    <span>{{ tag.nome }}</span>
+                </label>
+            {% empty %}
+                <label class="check"><input type="checkbox" value="animais"><span>Animais</span></label>
+                <label class="check"><input type="checkbox" value="fantasia"><span>Fantasia</span></label>
+                <label class="check"><input type="checkbox" value="plantas"><span>Plantas</span></label>
+                <label class="check"><input type="checkbox" value="brinquedos"><span>Brinquedos</span></label>
+                <label class="check"><input type="checkbox" value="decoracao"><span>Decoração</span></label>
+            {% endfor %}
+        </fieldset>
+
+        <fieldset data-grupo="status">
+            <legend>Disponibilidade</legend>
+            <label class="check">
+                <input type="checkbox" value="disponivel">
+                <span>Pronta entrega</span>
+            </label>
+            <label class="check">
+                <input type="checkbox" value="encomenda">
+                <span>Sob encomenda</span>
+            </label>
+            <label class="check">
+                <input type="checkbox" value="esgotado">
+                <span>Esgotado</span>
+            </label>
+        </fieldset>
+    </aside>
+
+    <section aria-label="Produtos">
+        <p class="contagem" id="contagem" aria-live="polite">
+            {{ produtos.count }} produto{{ produtos.count|pluralize }}
+        </p>
+        <div class="produtos" id="produtos">
+            {% for produto in produtos %}
+                <button type="button" class="card" 
+                        data-id="{{ produto.id }}" 
+                        data-status="{{ produto.status_disponibilidade }}" 
+                        data-cats="{% for t in produto.tags.all %}{{ t.slug }} {% endfor %}">
+                    <span class="card-foto">
+                        {% if produto.foto_principal %}
+                            <img src="{{ produto.foto_principal.imagem.url }}" alt="{{ produto.nome }}" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'img/Logo.png' %}" alt="{{ produto.nome }}" loading="lazy">
+                        {% endif %}
+                        <span class="chip chip-{{ produto.status_disponibilidade }}">{{ produto.status_label }}</span>
+                    </span>
+                    <span class="card-nome">{{ produto.nome }}</span>
+                    <span class="card-preco">R$ {{ produto.preco_formatado }}</span>
+                </button>
+            {% empty %}
+                <p class="vazio">Nenhum produto cadastrado no catálogo.</p>
+            {% endfor %}
+        </div>
+        <p class="vazio" id="sem-resultado" hidden>Nenhum produto com esses filtros.</p>
+    </section>
+</div>
+{% endblock %}
+
+{% block modal %}
+<div class="overlay" id="overlay" hidden>
+    <article class="modal" role="dialog" aria-modal="true" aria-labelledby="m-nome">
+        <button type="button" class="modal-fechar" id="m-fechar" aria-label="Fechar">×</button>
+        <div class="galeria">
+            <div class="miniaturas" id="m-minis"></div>
+            <div class="foto-grande">
+                <img id="m-foto" alt="">
+            </div>
+        </div>
+        <div class="info">
+            <div class="caixa caixa-nome">
+                <h2 id="m-nome"></h2>
+                <p class="preco" id="m-preco"></p>
+            </div>
+            <div class="caixa caixa-detalhes">
+                <ul class="chips" id="m-cats"></ul>
+                <p class="tempo">Tempo de produção: <strong id="m-tempo"></strong></p>
+                <button type="button" class="btn-comprar" id="m-comprar">Comprar</button>
+                <p class="nota" id="m-nota" hidden></p>
+            </div>
+        </div>
+        <div class="descricao">
+            <h3>Descrição</h3>
+            <p id="m-desc"></p>
+        </div>
+    </article>
+</div>
+
+<!-- Dados JSON dos produtos dinâmicos do Django -->
+<script type="application/json" id="dados-produtos">
+{{ dados_produtos_json|safe }}
+</script>
+{% endblock %}
