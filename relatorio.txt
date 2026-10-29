@@ -1,0 +1,411 @@
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================================
+% PACOTES ESSENCIAIS
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx} % Fonte Times New Roman equivalente
+\renewcommand{\contentsname}{Sumário}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
+\usepackage[top=2.5cm, bottom=2.0cm, left=2.5cm, right=2.0cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+% ============================================================================
+% PALETA DE CORES INSTITUCIONAL (UENP)
+% ============================================================================
+\definecolor{uenpnavy}{HTML}{163264}
+\definecolor{uenpgold}{HTML}{B59352}
+\definecolor{headerbg}{HTML}{EDF1F7}
+\definecolor{codebg}{RGB}{248, 249, 250}
+\definecolor{codeborder}{RGB}{222, 226, 230}
+
+% ============================================================================
+% CONFIGURAÇÃO DO LISTINGS (CÓDIGOS-FONTE)
+% ============================================================================
+\lstdefinestyle{djangoStyle}{
+    backgroundcolor=\color{codebg},
+    keywordstyle=\color{uenpnavy}\bfseries,
+    numberstyle=\tiny\color{gray},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    keepspaces=true,
+    numbers=left,
+    numbersep=7pt,
+    showstringspaces=false,
+    tabsize=4,
+    frame=single,
+    rulecolor=\color{codeborder}
+}
+\lstset{
+    style=djangoStyle,
+    literate=
+      {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+      {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+      {ã}{{\~a}}1 {õ}{{\~o}}1 {Ã}{{\~A}}1 {Õ}{{\~O}}1
+      {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1
+}
+
+% ============================================================================
+% CABEÇALHO, RODAPÉ E SEÇÕES
+% ============================================================================
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape\color{gray!80!black} UENP -- Programação para Internet | Loja Lua e Flor}
+\fancyhead[R]{\small\bfseries\color{uenpnavy} \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{uenpnavy}}
+  {\thesection}{0.6em}{}
+  [\vspace{2pt}{\color{uenpgold}\titlerule[0.8pt]}]
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{uenpnavy}}
+  {\thesubsection}{0.6em}{}
+
+\captionsetup{
+  font={small,bf},
+  labelfont={color=uenpnavy},
+  textfont={color=uenpnavy},
+  position=top,
+  skip=6pt
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\renewcommand{\arraystretch}{1.25}
+
+\newcommand{\diagrama}[3]{%
+  \begin{figure}[H]
+    \centering
+    \caption{#2}
+    \fbox{\includegraphics[width=0.98\textwidth,height=#3,keepaspectratio]{#1}}
+  \end{figure}%
+}
+
+\begin{document}
+
+% ============================================================================
+% CAPA INSTITUCIONAL UENP
+% ============================================================================
+\begin{titlepage}
+    \centering
+    {\color{uenpnavy}\rule{\linewidth}{1.8pt}}\\[-8pt]
+    {\color{uenpgold}\rule{\linewidth}{0.8pt}}
+    \vspace{0.5cm}
+
+    \IfFileExists{logo_uenp.png}{%
+        \includegraphics[width=3.8cm]{logo_uenp.png}\\[0.5cm]
+    }{}
+
+    {\large\bfseries\color{uenpnavy}
+    UNIVERSIDADE ESTADUAL DO NORTE DO PARANÁ (UENP)\\
+    CENTRO DE CIÊNCIAS TECNOLÓGICAS -- CAMPUS LUIZ MENEGHEL\\
+    DISCIPLINA DE PROGRAMAÇÃO PARA INTERNET\par}
+    \vspace{0.25cm}
+    {\normalsize Integração AEX com Engenharia de Software II -- Sistema Web da Loja\par}
+
+    \vspace{2.5cm}
+
+    {\LARGE\bfseries\color{uenpnavy}
+    RELATÓRIO DO SISTEMA WEB:\\[0.2cm]
+    LOJA LUA E FLOR\par}
+    \vspace{0.4cm}
+    {\large\itshape
+    Transformação da Modelagem em Sistema Web Funcional\par}
+
+    \vspace{2.6cm}
+
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{|>{\centering\arraybackslash}p{11.5cm}|}
+        \hline
+        \rowcolor{headerbg}
+        \textbf{\textcolor{uenpnavy}{DISCENTES}} \\
+        \hline
+        João Francisco Patelli de Souza \\
+        Carlos Eduardo Costa Nardon \\
+        Pedro Augusto Marchisepe de Matos \\
+        \hline
+        \textbf{Docente:} Tafarel Rocha da Silva\\
+        \hline
+    \end{tabular}
+
+    \vfill
+
+    {\large\bfseries\color{uenpnavy}
+    BANDEIRANTES -- PR\\
+    2026\par}
+    \vspace{0.3cm}
+    {\color{uenpnavy}\rule{\linewidth}{1.5pt}}
+\end{titlepage}
+
+% ============================================================================
+% SUMÁRIO
+% ============================================================================
+\tableofcontents
+\newpage
+
+% ============================================================================
+% SEÇÃO 1: INTRODUÇÃO E OBJETIVO
+% ============================================================================
+\section{Introdução e Objetivo}
+
+O objetivo deste projeto foi transformar a modelagem de sistema desenvolvida em Engenharia de Software II em um sistema web funcional para a \textbf{Loja Lua e Flor}, atendendo aos requisitos da disciplina de Programação para Internet. A aplicação contempla as regras de negócio do artesanato em crochê, dividindo as aquisições em dois tipos:
+\begin{enumerate}
+    \item \textbf{Pronta-Entrega:} Itens estocados que decrementam o estoque no momento da compra.
+    \item \textbf{Sob Encomenda:} Peças sob demanda vinculadas a ciclos limitados de produção.
+\end{enumerate}
+
+% ============================================================================
+% SEÇÃO 2: REQUISITOS UTILIZADOS E PRIORIZAÇÃO
+% ============================================================================
+\section{Requisitos e Implementação da Modelagem}
+
+Seguindo a modelagem anterior, o desenvolvimento priorizou os requisitos de prioridade \textit{Altíssima} e \textit{Alta} para compor a primeira versão funcional no navegador.
+
+\begin{longtable}{|>{\centering\arraybackslash}p{1.3cm}|>{\centering\arraybackslash}p{2.6cm}|p{8.4cm}|>{\centering\arraybackslash}p{2.2cm}|}
+\caption{Requisitos do sistema e prioridades da modelagem} \\
+\hline
+\rowcolor{headerbg}
+\textbf{\textcolor{uenpnavy}{ID}} & \textbf{\textcolor{uenpnavy}{Tipo}} & \textbf{\textcolor{uenpnavy}{Descrição}} & \textbf{\textcolor{uenpnavy}{Prioridade}} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{headerbg}
+\textbf{\textcolor{uenpnavy}{ID}} & \textbf{\textcolor{uenpnavy}{Tipo}} & \textbf{\textcolor{uenpnavy}{Descrição}} & \textbf{\textcolor{uenpnavy}{Prioridade}} \\
+\hline
+\endhead
+F04 & Funcional & O sistema deve possuir carrinho de compras. & Alta \\ \hline
+F05 & Funcional & O carrinho deve apresentar o subtotal e os demais valores. & Alta \\ \hline
+F07 & Funcional & O sistema deve permitir cadastro de clientes. & Altíssima \\ \hline
+F08 & Funcional & Navegar pelo site, visualizar e adicionar produtos ao carrinho sem cadastro. & Altíssima \\ \hline
+F09 & Funcional & O sistema deve exigir cadastro para realizar uma compra. & Altíssima \\ \hline
+F13 & Funcional & Hierarquia de permissões (administradores e operadores). & Alta \\ \hline
+NF02 & Não Funcional & Administrador deve possuir acesso completo ao sistema. & Altíssima \\ \hline
+F15 & Funcional & Operadores devem poder adicionar novos produtos. & Alta \\ \hline
+F16 & Funcional & Exigir aprovação do administrador para efetivar produtos de operadores. & Alta \\ \hline
+F17 & Funcional & Cadastro de produtos artesanais (crochê, panos, etc.). & Altíssima \\ \hline
+F18 & Funcional & Separar os produtos por coleções. & Alta \\ \hline
+F19 & Funcional & Criar e adicionar tags aos produtos durante o cadastro. & Altíssima \\ \hline
+F26 & Funcional & Produtos vendidos direto do estoque ou por encomenda. & Altíssima \\ \hline
+F27 & Funcional & Administrador define limite de encomendas. & Altíssima \\ \hline
+F28 & Funcional & Considerar esgotados produtos sem estoque e sem vagas de encomenda. & Altíssima \\ \hline
+F29 & Funcional & Opção ``Comprar'' para produtos disponíveis em estoque. & Alta \\ \hline
+F30 & Funcional & Opção ``Encomendar'' quando houver vagas no ciclo. & Alta \\ \hline
+F31 & Funcional & Opção ``Esgotado'' quando o limite for atingido. & Alta \\ \hline
+F32 & Funcional & Apresentar tempo estimado de criação de cada produto. & Alta \\ \hline
+F33 & Funcional & Calcular tempo de produção considerando a fila. & Alta \\ \hline
+\end{longtable}
+
+% ============================================================================
+% SEÇÃO 3: TECNOLOGIAS E ARQUITETURA
+% ============================================================================
+\section{Tecnologias e Arquitetura do Sistema}
+
+O sistema foi estruturado utilizando o padrão \textbf{MVT (Model-View-Template)} do Django, que separa a estrutura dos dados (Models), a lógica de controle (Views) e a interface visual (Templates).
+
+\begin{table}[htbp]
+\centering
+\caption{Tecnológica Utilizada.}
+\label{tab:tecnologias}
+\vspace{0.2cm}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Camada} & \textbf{Tecnologia / Ferramenta} \\ \midrule
+Linguagem & Python 3.14 \\
+Framework Web & Django 6.1 \\
+Banco de Dados & PostgreSQL (Produção) / SQLite (Testes) \\
+Manipulação de Imagens & Pillow \\
+Interface & HTML5, CSS3 e JavaScript \\
+Controle de Versão & Git / GitHub \\ \bottomrule
+\end{tabular}
+\end{table}
+
+O projeto foi dividido em três módulos principais (\textit{Django Apps}) para manter o código organizado:
+\begin{itemize}
+    \item \texttt{usuarios}: Gerencia o cadastro, login e controle de papéis (clientes e administradores).
+    \item \texttt{catalogo}: Gerencia os produtos, categorias e a verificação de disponibilidade.
+    \item \texttt{vendas}: Controla o carrinho de compras, finalização de pedidos e o estoque.
+\end{itemize}
+
+% ============================================================================
+% SEÇÃO 4: MODELAGEM E IMPLEMENTAÇÃO (CÓDIGOS)
+% ============================================================================
+\section{Modelagem e Implementação}
+
+Abaixo estão os principais trechos de código que sustentam o funcionamento do sistema a partir do diagrama de classes planejado.
+
+\subsection{Modelo de Usuário (\texttt{apps.usuarios})}
+Permite diferenciar clientes de administradores/artesãos e operadores conforme a modelagem de atores:
+\begin{lstlisting}[language=Python]
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class Usuario(AbstractUser):
+    # Tipos de perfis conforme especificacao de atores da modelagem
+    class Tipo(models.TextChoices):
+        ADMIN = 'ADMIN', 'Administrador'
+        OPERADOR = 'OPERADOR', 'Operador'
+        CLIENTE = 'CLIENTE', 'Cliente'
+
+    tipo = models.CharField(
+        max_length=20,
+        choices=Tipo.choices,
+        default=Tipo.CLIENTE,
+        verbose_name='Tipo de Perfil'
+    )
+    telefone = models.CharField(max_length=25, blank=True)
+    data_nascimento = models.DateField(null=True, blank=True)
+
+    # Identificadores de papeis para controle de acesso (Req. F13 / NF02)
+    @property
+    def is_administrador(self):
+        return self.tipo == self.Tipo.ADMIN or self.is_superuser
+
+    @property
+    def is_operador(self):
+        return self.tipo == self.Tipo.OPERADOR
+\end{lstlisting}
+
+\subsection{Modelo de Produto e Regra de Disponibilidade (\texttt{apps.catalogo})}
+Calcula dinamicamente se o produto pode ser comprado a pronta-entrega, encomendado ou se está esgotado:
+\begin{lstlisting}[language=Python]
+class Produto(models.Model):
+    nome = models.CharField(max_length=200, verbose_name='Nome do Fofurinho')
+    descricao = models.TextField()
+    preco = models.DecimalField(max_digits=10, decimal_places=2)
+    estoque = models.PositiveIntegerField(default=0)
+    tempo_estimado = models.PositiveIntegerField(default=10) # Dias de confeccao
+    ciclo_encomenda = models.ForeignKey('CicloEncomenda', null=True, blank=True, on_delete=models.SET_NULL)
+
+    @property
+    def status_disponibilidade(self):
+        # 1. Se ha pecas em estoque, entrega imediata (Req. F29)
+        if self.estoque > 0:
+            return 'disponivel'
+        # 2. Sem estoque: verifica vagas no ciclo de encomendas (Req. F30)
+        ciclo = self.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
+        if ciclo and ciclo.checar_limite():
+            return 'encomenda'
+        # 3. Sem estoque e sem vagas no ciclo: esgotado (Req. F31)
+        return 'esgotado'
+\end{lstlisting}
+
+\subsection{Controle de Vagas do Ciclo de Encomendas (\texttt{apps.catalogo})}
+Garante a integridade do teto de capacidade artesanal, impedindo extrapolações do limite máximo:
+\begin{lstlisting}[language=Python]
+class CicloEncomenda(models.Model):
+    nome = models.CharField(max_length=100, default='Ciclo Atual')
+    limite_maximo = models.PositiveIntegerField(default=10) # Teto definido pela artesã (Req. F27)
+    quantidade_atual = models.PositiveIntegerField(default=0)
+    is_aberto = models.BooleanField(default=True)
+
+    def checar_limite(self):
+        """Verifica se o ciclo ainda possui vagas abertas."""
+        return self.is_aberto and (self.quantidade_atual < self.limite_maximo)
+
+    def vagas_disponiveis(self):
+        """Calcula o saldo restante de pecas que podem ser aceitas."""
+        if not self.is_aberto:
+            return 0
+        return max(0, self.limite_maximo - self.quantidade_atual)
+
+    def cabe_encomenda(self, quantidade=1):
+        """Garante que a adicao em lote nao ultrapasse o teto maximo."""
+        return self.is_aberto and (self.quantidade_atual + quantidade <= self.limite_maximo)
+
+    def adicionar_encomenda(self, quantidade=1):
+        """Incrementa o contador de producao do ciclo ativo."""
+        self.quantidade_atual += quantidade
+        self.save()
+\end{lstlisting}
+
+\subsection{Controle de Vendas, Carrinho e Fila de Produção (\texttt{apps.vendas})}
+Gerencia o fluxo do carrinho, validação de regras de ciclo no checkout e inserção na fila de espera:
+\begin{lstlisting}[language=Python]
+@login_required(login_url='usuarios:login')
+def checkout_view(request):
+    carrinho = obter_carrinho(request)
+    
+    if request.method == 'POST':
+        # 1. Validacao rigorosa do teto do ciclo antes de efetivar o pedido
+        itens_carrinho = carrinho.itens.select_related('produto', 'produto__ciclo_encomenda')
+        for item_cart in itens_carrinho:
+            if item_cart.produto.status_disponibilidade == 'encomenda':
+                ciclo = item_cart.produto.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
+                if ciclo and not ciclo.cabe_encomenda(item_cart.quantidade):
+                    messages.error(request, f'Limite excedido no ciclo! Vagas restantes: {ciclo.vagas_disponiveis()}')
+                    return redirect('vendas:carrinho')
+
+        # 2. Criacao do registro formal do Pedido (Req. F09)
+        pedido = Pedido.objects.create(
+            numero=gerar_numero_pedido(),
+            cliente=request.user,
+            subtotal=carrinho.calcular_subtotal(),
+            valor_total=carrinho.calcular_total(),
+            metodo_pagamento=request.POST.get('metodo_pagamento')
+        )
+
+        # 3. Baixa em estoque ou encaminhamento para a Fila de Producao (Req. F33/F34)
+        for item_cart in itens_carrinho:
+            is_encomenda = (item_cart.produto.status_disponibilidade == 'encomenda')
+            item_pedido = ItemPedido.objects.create(
+                pedido=pedido, produto=item_cart.produto,
+                quantidade=item_cart.quantidade, preco_unitario=item_cart.produto.preco,
+                is_encomenda=is_encomenda
+            )
+            if is_encomenda:
+                ciclo.adicionar_encomenda(item_cart.quantidade)
+                # Aloca na fila com calculo acumulado de dias de confeccao
+                FilaProducao.objects.create(
+                    item_pedido=item_pedido,
+                    posicao=FilaProducao.objects.count() + 1,
+                    tempo_estimado_dias=item_cart.produto.tempo_estimado * item_cart.quantidade
+                )
+            else:
+                item_cart.produto.estoque -= item_cart.quantidade
+                item_cart.produto.save()
+
+        carrinho.limpar()
+        return redirect('vendas:confirmacao', pedido_id=pedido.id)
+\end{lstlisting}
+
+% ============================================================================
+% SEÇÃO 5: REFERÊNCIA DA MODELAGEM (DIAGRAMAS)
+% ============================================================================
+\clearpage
+\section{Referência da Modelagem (Diagramas)}
+
+Os diagramas desenvolvidos em Engenharia de Software II e aplicados como base estrutural no sistema web:
+
+\diagrama{Caso de Uso.png}{Diagrama de Casos de Uso}{14cm}
+
+\clearpage
+\diagrama{Diagrama Classe.png}{Diagrama de Classes (Mapeado para os Models)}{14cm}
+
+\clearpage
+\diagrama{diagrama_de_telas - flor_e_lua.png}{Diagrama de Navegação das Páginas Web}{13cm}
+
+% ============================================================================
+% SEÇÃO 6: CONSIDERAÇÕES FINAIS
+% ============================================================================
+\clearpage
+\section{Considerações Finais}
+
+O sistema atendeu aos requisitos mínimos propostos para a integração entre as disciplinas, entregando uma aplicação web funcional conectada ao banco de dados, com telas de listagem, carrinho e checkout baseadas fielmente na modelagem prévia da \textbf{Loja Lua e Flor}. O código foi modularizado conforme as boas práticas do framework Django e versionado via Git.
+
+\end{document}
