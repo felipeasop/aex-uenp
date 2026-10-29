@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.urls import reverse
 from .forms import LoginForm, CadastroClienteForm
 from .models import Usuario
@@ -13,6 +14,8 @@ def login_view(request):
     é imediatamente redirecionado ao Django Admin (/admin/).
     """
     next_url = request.GET.get('next') or request.POST.get('next') or ''
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        next_url = ''
 
     # Se já estiver autenticado
     if request.user.is_authenticated:
@@ -53,6 +56,8 @@ def login_view(request):
 def cadastro_view(request):
     """Cadastro de novo cliente com login automático após criação."""
     next_url = request.GET.get('next') or request.POST.get('next') or ''
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        next_url = ''
 
     if request.user.is_authenticated:
         return redirect('catalogo:home')
