@@ -76,3 +76,22 @@ class VendasCartAndCheckoutTests(TestCase):
         # O estoque do produto deve ter reduzido de 2 para 1
         self.produto.refresh_from_db()
         self.assertEqual(self.produto.estoque, 1)
+
+    def test_carrinho_e_alteracoes_sao_controlados_pelo_servidor(self):
+        """Alterações no carrinho exigem POST e ficam persistidas no Django."""
+        url_adicionar = reverse('vendas:adicionar_ao_carrinho', args=[self.produto.id])
+        self.assertEqual(self.client.get(url_adicionar).status_code, 405)
+
+        response = self.client.post(url_adicionar)
+        self.assertRedirects(response, reverse('vendas:carrinho'))
+        carrinho = Carrinho.objects.get(session_key=self.client.session.session_key)
+        item = carrinho.itens.get(produto=self.produto)
+        self.assertEqual(item.quantidade, 1)
+
+        response = self.client.post(
+            reverse('vendas:atualizar_item_carrinho', args=[item.id]),
+            {'acao': 'mais'},
+        )
+        self.assertRedirects(response, reverse('vendas:carrinho'))
+        item.refresh_from_db()
+        self.assertEqual(item.quantidade, 2)

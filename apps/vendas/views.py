@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from apps.catalogo.models import Produto, CicloEncomenda
 from .models import Carrinho, ItemCarrinho, Cupom, Pedido, ItemPedido, StatusPedido, FilaProducao
 
@@ -53,6 +54,7 @@ def carrinho_view(request):
     return render(request, 'vendas/carrinho.html', context)
 
 
+@require_POST
 def adicionar_ao_carrinho(request, produto_id):
     """Adiciona um produto ao carrinho (Req. F08)."""
     produto = get_object_or_404(Produto, id=produto_id, ativo=True, aprovado=True)
@@ -62,6 +64,29 @@ def adicionar_ao_carrinho(request, produto_id):
             return JsonResponse({'sucesso': False, 'mensagem': 'Este produto está esgotado.'}, status=400)
         messages.error(request, 'Este produto está esgotado no momento.')
         return redirect('catalogo:home')
+
+    # Validação do ciclo de encomenda para produtos sob encomenda
+    if produto.status_disponibilidade == 'encomenda':
+        ciclo = produto.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
+        if ciclo:
+            # Calcula quantos itens deste tipo de produto já estão no carrinho
+            carrinho_temp = obter_carrinho(request)
+            item_existente = carrinho_temp.itens.filter(produto=produto).first()
+            quantidade_no_carrinho = item_existente.quantidade if item_existente else 0
+            # A nova quantidade total seria carrinho + 1
+            nova_quantidade = quantidade_no_carrinho + 1
+            vagas = ciclo.vagas_disponiveis()
+
+            if nova_quantidade > vagas:
+                msg = (
+                    f'Limite de encomendas atingido! '
+                    f'O ciclo atual só aceita mais {vagas} encomenda(s). '
+                    f'Diminua a quantidade de produtos.'
+                )
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'sucesso': False, 'mensagem': msg}, status=400)
+                messages.error(request, msg)
+                return redirect('catalogo:home')
 
     carrinho = obter_carrinho(request)
     item, created = ItemCarrinho.objects.get_or_create(
@@ -85,13 +110,29 @@ def adicionar_ao_carrinho(request, produto_id):
     return redirect('vendas:carrinho')
 
 
+@require_POST
 def atualizar_item_carrinho(request, item_id):
     """Altera a quantidade ou remove item do carrinho."""
     carrinho = obter_carrinho(request)
     item = get_object_or_404(ItemCarrinho, id=item_id, carrinho=carrinho)
-    acao = request.POST.get('acao') or request.GET.get('acao')
+    acao = request.POST.get('acao')
 
     if acao == 'mais':
+        # Validação do ciclo para produtos sob encomenda
+        if item.produto.status_disponibilidade == 'encomenda':
+            ciclo = item.produto.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
+            if ciclo:
+                vagas = ciclo.vagas_disponiveis()
+                if item.quantidade + 1 > vagas:
+                    msg = (
+                        f'Limite de encomendas atingido! '
+                        f'O ciclo atual só aceita mais {vagas} encomenda(s). '
+                        f'Diminua a quantidade de produtos.'
+                    )
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'sucesso': False, 'mensagem': msg}, status=400)
+                    messages.error(request, msg)
+                    return redirect('vendas:carrinho')
         item.quantidade += 1
         item.save()
     elif acao == 'menos':
@@ -114,6 +155,7 @@ def atualizar_item_carrinho(request, item_id):
     return redirect('vendas:carrinho')
 
 
+@require_POST
 def aplicar_cupom(request):
     """Valida e aplica cupom de desconto no carrinho."""
     if request.method == 'POST':
@@ -135,6 +177,7 @@ def aplicar_cupom(request):
     return redirect('vendas:carrinho')
 
 
+@require_POST
 def remover_cupom(request):
     """Remove o cupom aplicado."""
     carrinho = obter_carrinho(request)
@@ -159,6 +202,33 @@ def checkout_view(request):
     total = carrinho.calcular_total()
 
     if request.method == 'POST':
+        # ── Validação do ciclo de encomendas antes de finalizar ──
+        # Soma todas as quantidades de itens sob encomenda no carrinho
+        itens_carrinho = carrinho.itens.select_related('produto', 'produto__ciclo_encomenda')
+        total_encomendas_por_ciclo = {}
+        for item_cart in itens_carrinho:
+            produto = item_cart.produto
+            if produto.status_disponibilidade == 'encomenda':
+                ciclo = produto.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
+                if ciclo:
+                    ciclo_id = ciclo.id
+                    total_encomendas_por_ciclo.setdefault(ciclo_id, {'ciclo': ciclo, 'qtd': 0})
+                    total_encomendas_por_ciclo[ciclo_id]['qtd'] += item_cart.quantidade
+
+        for info in total_encomendas_por_ciclo.values():
+            ciclo = info['ciclo']
+            qtd_pedida = info['qtd']
+            if not ciclo.cabe_encomenda(qtd_pedida):
+                vagas = ciclo.vagas_disponiveis()
+                messages.error(
+                    request,
+                    f'Limite de encomendas atingido! '
+                    f'O ciclo "{ciclo.nome}" aceita apenas mais {vagas} produto(s), '
+                    f'mas seu carrinho possui {qtd_pedida} encomenda(s). '
+                    f'Volte ao carrinho e diminua a quantidade.'
+                )
+                return redirect('vendas:carrinho')
+
         # Coleta os dados de entrega local (Req. NF01 / Astah LocalEncontro)
         rua = request.POST.get('rua', '').strip()
         numero_end = request.POST.get('numero_end', '').strip()

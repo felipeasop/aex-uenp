@@ -72,6 +72,16 @@ class CicloEncomenda(models.Model):
         """Retorna True se ainda houver vaga no ciclo."""
         return self.is_aberto and (self.quantidade_atual < self.limite_maximo)
 
+    def vagas_disponiveis(self):
+        """Retorna quantas vagas ainda cabem no ciclo."""
+        if not self.is_aberto:
+            return 0
+        return max(0, self.limite_maximo - self.quantidade_atual)
+
+    def cabe_encomenda(self, quantidade=1):
+        """Retorna True se a quantidade solicitada cabe no ciclo sem estourar o limite."""
+        return self.is_aberto and (self.quantidade_atual + quantidade <= self.limite_maximo)
+
     def adicionar_encomenda(self, quantidade=1):
         """Registra a entrada de uma nova encomenda no ciclo."""
         self.quantidade_atual += quantidade

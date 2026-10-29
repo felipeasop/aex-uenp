@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from .models import (
     TipoProduto, Tag, Colecao, CicloEncomenda,
     Produto, FotoProduto, SolicitacaoProduto,
-    AvisoEstoque, Favorito, Promocao
+    AvisoEstoque, Promocao
 )
 
 
@@ -114,11 +114,6 @@ class ColecaoAdmin(admin.ModelAdmin):
 class AvisoEstoqueAdmin(admin.ModelAdmin):
     list_display = ['cliente', 'produto', 'data_solicitacao', 'notificado']
     list_filter = ['notificado', 'data_solicitacao']
-
-
-@admin.register(Favorito)
-class FavoritoAdmin(admin.ModelAdmin):
-    list_display = ['cliente', 'produto', 'data_favoritado']
 
 
 @admin.register(Promocao)

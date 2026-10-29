@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from apps.vendas.views import carrinho_view
 from apps.usuarios.views import login_view, logout_view
 
 # Customização do Django Admin
@@ -20,7 +19,6 @@ urlpatterns = [
     path('conta/', include('apps.usuarios.urls', namespace='usuarios')),
 
     # Atalhos convenientes para compatibilidade direta com os links do template
-    path('carrinho/', carrinho_view, name='atalho_carrinho'),
     path('entrar/', login_view, name='atalho_login'),
     path('login/', login_view, name='atalho_login_alt'),
     path('sair/', logout_view, name='atalho_logout'),

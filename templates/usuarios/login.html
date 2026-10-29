@@ -9,17 +9,18 @@
         <img src="{% static 'img/Logo.png' %}" alt="Lua e Flor" width="96" height="96">
         <h1>Bem-vinda(o) de volta</h1>
 
-        <div class="abas" role="tablist">
-            <button type="button" role="tab" id="tab-entrar" aria-selected="{% if active_tab == 'entrar' %}true{% else %}false{% endif %}" data-aba="entrar">
+        <nav class="abas" aria-label="Acesso à conta">
+            <a href="{% url 'usuarios:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}" {% if active_tab == 'entrar' %}aria-current="page"{% endif %}>
                 Entrar
-            </button>
-            <button type="button" role="tab" id="tab-criar" aria-selected="{% if active_tab == 'criar' %}true{% else %}false{% endif %}" data-aba="criar">
+            </a>
+            <a href="{% url 'usuarios:cadastro' %}{% if next %}?next={{ next|urlencode }}{% endif %}" {% if active_tab == 'criar' %}aria-current="page"{% endif %}>
                 Criar conta
-            </button>
-        </div>
+            </a>
+        </nav>
 
         <!-- Formulário de Login -->
-        <form class="form" data-painel="entrar" method="post" action="{% url 'usuarios:login' %}" {% if active_tab != 'entrar' %}hidden{% endif %}>
+        {% if active_tab == 'entrar' %}
+        <form class="form" method="post" action="{% url 'usuarios:login' %}">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
             <input type="hidden" name="btn_entrar" value="1">
@@ -41,9 +42,11 @@
 
             <button class="btn btn-ouro" type="submit">Entrar</button>
         </form>
+        {% endif %}
 
         <!-- Formulário de Criação de Conta -->
-        <form class="form" data-painel="criar" method="post" action="{% url 'usuarios:cadastro' %}" {% if active_tab != 'criar' %}hidden{% endif %}>
+        {% if active_tab == 'criar' %}
+        <form class="form" method="post" action="{% url 'usuarios:cadastro' %}">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
 
@@ -88,6 +91,7 @@
 
             <button class="btn btn-lilas" type="submit">Criar minha conta</button>
         </form>
+        {% endif %}
 
         <p class="nota">
             Clientes autenticados podem acompanhar o estado de produção e receber novidades personalizadas.

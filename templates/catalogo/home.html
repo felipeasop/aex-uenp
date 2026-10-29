@@ -10,56 +10,52 @@
 </section>
 
 <div class="loja">
-    <button class="filtros-toggle" type="button" aria-expanded="false" aria-controls="filtros">Filtros</button>
-    <aside class="filtros" id="filtros" aria-label="Filtros">
+    <form class="filtros" method="get" aria-label="Filtros" data-auto-submit>
         <div class="filtros-topo">
             <h2>Filtros</h2>
-            <button type="button" class="link" id="limpar-filtros">Limpar</button>
+            <a class="link" href="{% url 'catalogo:home' %}">Limpar</a>
         </div>
         
         <fieldset data-grupo="categoria">
             <legend>Categorias</legend>
             {% for tag in tags %}
                 <label class="check">
-                    <input type="checkbox" value="{{ tag.slug }}">
+                    <input type="checkbox" name="categoria" value="{{ tag.slug }}" {% if tag.slug in categorias_selecionadas %}checked{% endif %}>
                     <span>{{ tag.nome }}</span>
                 </label>
             {% empty %}
-                <label class="check"><input type="checkbox" value="animais"><span>Animais</span></label>
-                <label class="check"><input type="checkbox" value="fantasia"><span>Fantasia</span></label>
-                <label class="check"><input type="checkbox" value="plantas"><span>Plantas</span></label>
-                <label class="check"><input type="checkbox" value="brinquedos"><span>Brinquedos</span></label>
-                <label class="check"><input type="checkbox" value="decoracao"><span>Decoração</span></label>
+                <label class="check"><input type="checkbox" name="categoria" value="animais"><span>Animais</span></label>
+                <label class="check"><input type="checkbox" name="categoria" value="fantasia"><span>Fantasia</span></label>
+                <label class="check"><input type="checkbox" name="categoria" value="plantas"><span>Plantas</span></label>
+                <label class="check"><input type="checkbox" name="categoria" value="brinquedos"><span>Brinquedos</span></label>
+                <label class="check"><input type="checkbox" name="categoria" value="decoracao"><span>Decoração</span></label>
             {% endfor %}
         </fieldset>
 
         <fieldset data-grupo="status">
             <legend>Disponibilidade</legend>
             <label class="check">
-                <input type="checkbox" value="disponivel">
+            <input type="checkbox" name="status" value="disponivel" {% if status_selecionado == 'disponivel' %}checked{% endif %}>
                 <span>Pronta entrega</span>
             </label>
             <label class="check">
-                <input type="checkbox" value="encomenda">
+            <input type="checkbox" name="status" value="encomenda" {% if status_selecionado == 'encomenda' %}checked{% endif %}>
                 <span>Sob encomenda</span>
             </label>
             <label class="check">
-                <input type="checkbox" value="esgotado">
+            <input type="checkbox" name="status" value="esgotado" {% if status_selecionado == 'esgotado' %}checked{% endif %}>
                 <span>Esgotado</span>
             </label>
         </fieldset>
-    </aside>
+    </form>
 
     <section aria-label="Produtos">
         <p class="contagem" id="contagem" aria-live="polite">
-            {{ produtos.count }} produto{{ produtos.count|pluralize }}
+            {{ quantidade_produtos }} produto{{ quantidade_produtos|pluralize }}
         </p>
         <div class="produtos" id="produtos">
             {% for produto in produtos %}
-                <button type="button" class="card" 
-                        data-id="{{ produto.id }}" 
-                        data-status="{{ produto.status_disponibilidade }}" 
-                        data-cats="{% for t in produto.tags.all %}{{ t.slug }} {% endfor %}">
+                <a class="card" href="{% url 'catalogo:produto_detalhe' produto.id %}" data-produto-id="{{ produto.id }}">
                     <span class="card-foto">
                         {% if produto.foto_principal %}
                             <img src="{{ produto.foto_principal.imagem.url }}" alt="{{ produto.nome }}" loading="lazy">
@@ -70,47 +66,25 @@
                     </span>
                     <span class="card-nome">{{ produto.nome }}</span>
                     <span class="card-preco">R$ {{ produto.preco_formatado }}</span>
-                </button>
+                </a>
             {% empty %}
                 <p class="vazio">Nenhum produto cadastrado no catálogo.</p>
             {% endfor %}
         </div>
-        <p class="vazio" id="sem-resultado" hidden>Nenhum produto com esses filtros.</p>
     </section>
 </div>
 {% endblock %}
 
 {% block modal %}
-<div class="overlay" id="overlay" hidden>
-    <article class="modal" role="dialog" aria-modal="true" aria-labelledby="m-nome">
-        <button type="button" class="modal-fechar" id="m-fechar" aria-label="Fechar">×</button>
-        <div class="galeria">
-            <div class="miniaturas" id="m-minis"></div>
-            <div class="foto-grande">
-                <img id="m-foto" alt="">
-            </div>
-        </div>
-        <div class="info">
-            <div class="caixa caixa-nome">
-                <h2 id="m-nome"></h2>
-                <p class="preco" id="m-preco"></p>
-            </div>
-            <div class="caixa caixa-detalhes">
-                <ul class="chips" id="m-cats"></ul>
-                <p class="tempo">Tempo de produção: <strong id="m-tempo"></strong></p>
-                <button type="button" class="btn-comprar" id="m-comprar">Comprar</button>
-                <p class="nota" id="m-nota" hidden></p>
-            </div>
-        </div>
-        <div class="descricao">
-            <h3>Descrição</h3>
-            <p id="m-desc"></p>
-        </div>
+<div class="overlay" id="produto-overlay" hidden>
+    <article class="modal">
+        <button class="modal-fechar" id="modal-fechar" type="button" aria-label="Fechar">✕</button>
+        <div id="produto-modal-body"></div>
     </article>
 </div>
+{% endblock %}
 
-<!-- Dados JSON dos produtos dinâmicos do Django -->
-<script type="application/json" id="dados-produtos">
-{{ dados_produtos_json|safe }}
-</script>
+{% block scripts %}
+<script src="{% static 'js/filtros.js' %}"></script>
+<script src="{% static 'js/produto_modal.js' %}"></script>
 {% endblock %}

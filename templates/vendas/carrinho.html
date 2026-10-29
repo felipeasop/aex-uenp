@@ -25,16 +25,21 @@
                             {% endif %}
                         </div>
                         <div class="qtd">
-                            <a href="{% url 'vendas:atualizar_item_carrinho' item.id %}?acao=menos" 
-                               class="btn-qtd" 
-                               style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:1px solid #ccc; border-radius:50%; color:#333; font-weight:bold;">−</a>
+                            <form method="post" action="{% url 'vendas:atualizar_item_carrinho' item.id %}">
+                                {% csrf_token %}
+                                <button name="acao" value="menos" class="btn-qtd" type="submit" aria-label="Diminuir quantidade">−</button>
+                            </form>
                             <output style="font-weight: bold; min-width: 24px; text-align: center;">{{ item.quantidade }}</output>
-                            <a href="{% url 'vendas:atualizar_item_carrinho' item.id %}?acao=mais" 
-                               class="btn-qtd" 
-                               style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:1px solid #ccc; border-radius:50%; color:#333; font-weight:bold;">+</a>
+                            <form method="post" action="{% url 'vendas:atualizar_item_carrinho' item.id %}">
+                                {% csrf_token %}
+                                <button name="acao" value="mais" class="btn-qtd" type="submit" aria-label="Aumentar quantidade">+</button>
+                            </form>
                         </div>
                         <p class="item-total">R$ {{ item.subtotal|floatformat:2 }}</p>
-                        <a href="{% url 'vendas:atualizar_item_carrinho' item.id %}?acao=remover" class="link" style="color: #c62828;">Remover</a>
+                        <form method="post" action="{% url 'vendas:atualizar_item_carrinho' item.id %}">
+                            {% csrf_token %}
+                            <button name="acao" value="remover" class="link" type="submit" style="color: #c62828;">Remover</button>
+                        </form>
                     </li>
                 {% endfor %}
             </ul>
@@ -63,7 +68,10 @@
                     {% if carrinho.cupom %}
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.85rem; color: #2e7d32;">Cupom <strong>{{ carrinho.cupom.codigo }}</strong> aplicado!</span>
-                            <a href="{% url 'vendas:remover_cupom' %}" class="link" style="font-size: 0.8rem; color: #c62828;">Remover</a>
+                            <form method="post" action="{% url 'vendas:remover_cupom' %}">
+                                {% csrf_token %}
+                                <button class="link" type="submit" style="font-size: 0.8rem; color: #c62828;">Remover</button>
+                            </form>
                         </div>
                     {% else %}
                         <form action="{% url 'vendas:aplicar_cupom' %}" method="post" style="display: flex; gap: 0.5rem;">
