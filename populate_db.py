@@ -1,6 +1,3 @@
-"""
-Script para inicialização e povoamento do banco de dados com os dados do template Lua e Flor.
-"""
 import os
 import django
 from decimal import Decimal
@@ -16,10 +13,7 @@ from apps.catalogo.models import TipoProduto, Tag, Colecao, CicloEncomenda, Prod
 from apps.vendas.models import StatusPedido, Cupom
 
 def popular():
-    print("Iniciando povoamento do banco de dados...")
-
-    # 1. Usuários do Sistema
-    admin_user, _ = Usuario.objects.get_or_create(
+    usuario_admin, _ = Usuario.objects.get_or_create(
         username='admin',
         defaults={
             'email': 'admin@luaeflor.com.br',
@@ -30,23 +24,21 @@ def popular():
             'is_superuser': True,
         }
     )
-    admin_user.set_password('admin123')
-    admin_user.save()
-    print("-> Administrador configurado: admin / admin123 (redireciona para /admin/)")
+    usuario_admin.set_password('admin123')
+    usuario_admin.save()
 
     operador_user, _ = Usuario.objects.get_or_create(
         username='operador',
         defaults={
             'email': 'operador@luaeflor.com.br',
-            'first_name': 'Joana',
-            'last_name': 'Artesã',
+            'first_name': 'Foo',
+            'last_name': 'Bar',
             'tipo': Usuario.Tipo.OPERADOR,
             'is_staff': True,
         }
     )
     operador_user.set_password('operador123')
     operador_user.save()
-    print("-> Operador configurado: operador / operador123")
 
     cliente_user, _ = Usuario.objects.get_or_create(
         username='cliente@exemplo.com',
@@ -61,9 +53,7 @@ def popular():
     )
     cliente_user.set_password('cliente123')
     cliente_user.save()
-    print("-> Cliente de teste configurado: cliente@exemplo.com / cliente123")
 
-    # 2. Status Operacionais dos Pedidos
     status_lista = [
         ('Aguardando Pagamento', 1),
         ('Pagamento Confirmado', 2),
@@ -74,9 +64,7 @@ def popular():
     ]
     for nome_st, ordem in status_lista:
         StatusPedido.objects.get_or_create(nome=nome_st, defaults={'ordem': ordem})
-    print("-> Status de pedidos criados.")
 
-    # 3. Ciclo de Encomendas
     ciclo, _ = CicloEncomenda.objects.get_or_create(
         nome='Ciclo da Primavera 2026',
         defaults={
@@ -233,11 +221,7 @@ def popular():
         if caminho_foto.exists() and not prod.fotos.exists():
             with open(caminho_foto, 'rb') as f:
                 foto_obj = FotoProduto(produto=prod, is_principal=True)
-                foto_obj.imagem.save(f"produtos/{pdata['foto_nome']}", File(f), save=True)
-
-        print(f"-> Produto cadastrado: {prod.nome} | Disponibilidade: {prod.status_label}")
-
-    print("\nBanco de dados povoado com sucesso!")
+                foto_obj.imagem.save(pdata['foto_nome'], File(f), save=True)
 
 if __name__ == '__main__':
     popular()
