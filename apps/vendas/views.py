@@ -1,4 +1,5 @@
-import random
+from uuid import uuid4
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -58,6 +59,9 @@ def carrinho_view(request):
 def adicionar_ao_carrinho(request, produto_id):
     """Adiciona um produto ao carrinho (Req. F08)."""
     produto = get_object_or_404(Produto, id=produto_id, ativo=True, aprovado=True)
+    carrinho = obter_carrinho(request)
+    item_existente = carrinho.itens.filter(produto=produto).first()
+    quantidade_no_carrinho = item_existente.quantidade if item_existente else 0
 
     if produto.status_disponibilidade == 'esgotado':
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -69,15 +73,8 @@ def adicionar_ao_carrinho(request, produto_id):
     if produto.status_disponibilidade == 'encomenda':
         ciclo = produto.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
         if ciclo:
-            # Calcula quantos itens deste tipo de produto já estão no carrinho
-            carrinho_temp = obter_carrinho(request)
-            item_existente = carrinho_temp.itens.filter(produto=produto).first()
-            quantidade_no_carrinho = item_existente.quantidade if item_existente else 0
-            # A nova quantidade total seria carrinho + 1
-            nova_quantidade = quantidade_no_carrinho + 1
             vagas = ciclo.vagas_disponiveis()
-
-            if nova_quantidade > vagas:
+            if quantidade_no_carrinho + 1 > vagas:
                 msg = (
                     f'Limite de encomendas atingido! '
                     f'O ciclo atual só aceita mais {vagas} encomenda(s). '
@@ -88,7 +85,13 @@ def adicionar_ao_carrinho(request, produto_id):
                 messages.error(request, msg)
                 return redirect('catalogo:home')
 
-    carrinho = obter_carrinho(request)
+    if produto.status_disponibilidade == 'disponivel' and quantidade_no_carrinho + 1 > produto.estoque:
+        msg = f'Estoque insuficiente, o estoque atual desse produto é de {produto.estoque} unidade(s).'
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'sucesso': False, 'mensagem': msg}, status=400)
+        messages.error(request, msg)
+        return redirect('catalogo:home')
+
     item, created = ItemCarrinho.objects.get_or_create(
         carrinho=carrinho,
         produto=produto,
@@ -133,6 +136,12 @@ def atualizar_item_carrinho(request, item_id):
                         return JsonResponse({'sucesso': False, 'mensagem': msg}, status=400)
                     messages.error(request, msg)
                     return redirect('vendas:carrinho')
+        if item.produto.status_disponibilidade == 'disponivel' and item.quantidade + 1 > item.produto.estoque:
+            msg = f'Estoque insuficiente, o estoque atual desse produto é de {item.produto.estoque} unidade(s).'
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'sucesso': False, 'mensagem': msg}, status=400)
+            messages.error(request, msg)
+            return redirect('vendas:carrinho')
         item.quantidade += 1
         item.save()
     elif acao == 'menos':
@@ -188,6 +197,7 @@ def remover_cupom(request):
 
 
 @login_required(login_url='usuarios:login')
+@transaction.atomic
 def checkout_view(request):
     """
     Finalização de compra. Exige cliente cadastrado e autenticado (Req. F09).
@@ -208,6 +218,12 @@ def checkout_view(request):
         total_encomendas_por_ciclo = {}
         for item_cart in itens_carrinho:
             produto = item_cart.produto
+            if produto.status_disponibilidade == 'disponivel' and item_cart.quantidade > produto.estoque:
+                messages.error(
+                    request,
+                    f'Estoque insuficiente, o estoque atual desse produto é de {produto.estoque} unidade(s).'
+                )
+                return redirect('vendas:carrinho')
             if produto.status_disponibilidade == 'encomenda':
                 ciclo = produto.ciclo_encomenda or CicloEncomenda.objects.filter(is_aberto=True).first()
                 if ciclo:
@@ -241,14 +257,9 @@ def checkout_view(request):
         # Status inicial do pedido
         status_inicial, _ = StatusPedido.objects.get_or_create(nome='Aguardando Pagamento', defaults={'ordem': 1})
 
-        # Gera número do pedido (#LF-2026-XXXX)
-        ano = timezone.now().year
-        aleatorio = random.randint(1000, 9999)
-        numero_pedido = f'#LF-{ano}-{aleatorio}'
-
         # Criação do Pedido no banco de dados
         pedido = Pedido.objects.create(
-            numero=numero_pedido,
+            numero=uuid4().hex,
             cliente=request.user,
             status=status_inicial,
             cupom=carrinho.cupom,
@@ -265,6 +276,9 @@ def checkout_view(request):
             cidade=cidade,
             observacoes_entrega=observacoes
         )
+        # Número definitivo do pedido a partir do id (#LF-2026-0001)
+        pedido.numero = f'#LF-{timezone.now().year}-{pedido.id:04d}'
+        pedido.save(update_fields=['numero'])
 
         # Criação dos Itens do Pedido e Fila de Produção
         for item_cart in carrinho.itens.select_related('produto'):
