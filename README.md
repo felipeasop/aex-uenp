@@ -3,6 +3,8 @@
 Para iniciar a aplicação localmente:
 
 ```bash
+python -m venv venv
+venv/bin/pip install -r requirements.txt
 venv/bin/python manage.py migrate
 venv/bin/python populate_db.py
 venv/bin/python manage.py runserver
