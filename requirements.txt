@@ -1,4 +1,6 @@
 asgiref==3.13.0
+gunicorn>=21.0.0
+hitenoise>=6.5.0
 Django==6.1.2
 pillow==13.0.0
 sqlparse==0.6.0
