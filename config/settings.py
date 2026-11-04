@@ -104,14 +104,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# Static files (CSS, JavaScript, Images)
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Storage seguro do WhiteNoise (evita erros de manifesto estrito)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Media files (Imagens de produtos e coleções)
 MEDIA_URL = '/media/'
