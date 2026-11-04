@@ -108,7 +108,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Configuração moderna de storages obrigatória para Django 4.2+ / 5.x / 6.x
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -117,6 +116,9 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+# Garante que o WhiteNoise encontre os estáticos usando os finders do Django
+WHITENOISE_USE_FINDERS = True
 
 # Media files (Imagens de produtos e coleções)
 MEDIA_URL = '/media/'
