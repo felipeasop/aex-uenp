@@ -108,6 +108,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Se você tiver uma pasta static global na raiz, adicione aqui. Caso contrário, mantenha a lista vazia ou com os diretórios corretos:
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -117,7 +122,6 @@ STORAGES = {
     },
 }
 
-# Garante que o WhiteNoise encontre os estáticos usando os finders do Django
 WHITENOISE_USE_FINDERS = True
 
 # Media files (Imagens de produtos e coleções)
