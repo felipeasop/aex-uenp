@@ -16,7 +16,7 @@ sys.path.insert(0, str(BASE_DIR / 'apps'))
 
 SECRET_KEY = 'django-insecure-lua-e-flor-artesanal-secret-key-2026'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
