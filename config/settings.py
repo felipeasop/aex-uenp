@@ -106,16 +106,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-
-# Pasta onde o collectstatic vai reunir os arquivos para produção (usado pelo WhiteNoise)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# (Opcional) Se você tiver uma pasta static global na raiz do projeto, descomente a linha abaixo:
-# STATICFILES_DIRS = [BASE_DIR / 'static']
-
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Storage seguro do WhiteNoise (evita erros de manifesto estrito)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Media files (Imagens de produtos e coleções)
 MEDIA_URL = '/media/'
