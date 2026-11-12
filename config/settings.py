@@ -16,7 +16,8 @@ sys.path.insert(0, str(BASE_DIR / 'apps'))
 
 SECRET_KEY = 'django-insecure-lua-e-flor-artesanal-secret-key-2026'
 
-DEBUG = False
+# DEFINIR PARA DEBUG=False SE SUBIR PARA PRODUCAO
+DEBUG = os.environ.get('DEBUG', 'False' if 'RENDER' in os.environ else 'True').lower() in ('1', 'true', 'yes')
 
 ALLOWED_HOSTS = ['*']
 
@@ -70,8 +71,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 DATABASES = {
     'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://postgres:postgres@localhost:5432/mysite',
+        # Padrão local (veja o README). Para outro banco, defina DATABASE_URL.
+        default='postgresql://luaeflor:luaeflor@localhost:5432/luaeflor',
         conn_max_age=600
     )
 }

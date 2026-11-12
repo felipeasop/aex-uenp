@@ -3,7 +3,6 @@ import django
 from decimal import Decimal
 from datetime import date, timedelta
 from pathlib import Path
-from django.core.files import File
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
@@ -219,9 +218,12 @@ def popular():
         # Associa foto se arquivo existir
         caminho_foto = media_dir / pdata['foto_nome']
         if caminho_foto.exists() and not prod.fotos.exists():
-            with open(caminho_foto, 'rb') as f:
-                foto_obj = FotoProduto(produto=prod, is_principal=True)
-                foto_obj.imagem.save(pdata['foto_nome'], File(f), save=True)
+            # Aponta para o arquivo que já está em media/produtos (sem duplicar)
+            FotoProduto.objects.create(
+                produto=prod,
+                is_principal=True,
+                imagem=f"produtos/{pdata['foto_nome']}",
+            )
 
 if __name__ == '__main__':
     popular()

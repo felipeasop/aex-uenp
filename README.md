@@ -28,7 +28,7 @@ Antes de iniciar, certifique-se de ter instalado no seu sistema operacional:
 
 ## 🐘 1. Configurando o Banco de Dados (PostgreSQL)
 
-O sistema espera por padrão as credenciais abaixo (definidas em `config/settings.py`):
+O sistema espera por padrão as credenciais abaixo (definidas em `config/settings.py`, via `DATABASE_URL`):
 - **Nome do Banco:** `luaeflor`
 - **Usuário:** `luaeflor`
 - **Senha:** `luaeflor`
@@ -54,15 +54,25 @@ ALTER DATABASE luaeflor OWNER TO luaeflor;
 \q
 ```
 
-*(Opcional: Caso utilize credenciais diferentes, basta configurar as variáveis de ambiente `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` e `DB_PORT`).*
+*(Opcional: caso utilize credenciais diferentes, defina a variável de ambiente `DATABASE_URL` antes de rodar os comandos do Django.)*
+
+```bash
+# Linux / macOS
+export DATABASE_URL=postgresql://usuario:senha@localhost:5432/nome_do_banco
+```
+```powershell
+# Windows (PowerShell)
+$env:DATABASE_URL="postgresql://usuario:senha@localhost:5432/nome_do_banco"
+```
 
 ---
 
 ## 💻 2. Clonando e Preparando o Ambiente Virtual (venv)
 
-1. **Acesse a pasta do projeto:**
+1. **Clone o repositório e acesse a pasta do projeto:**
    ```bash
-   cd Projeto_lua_e_flor
+   git clone https://github.com/felipeasop/aex-uenp.git
+   cd aex-uenp
    ```
 
 2. **Crie o ambiente virtual (`venv`):**
@@ -143,12 +153,30 @@ python manage.py runserver 0.0.0.0:8000
 
 ---
 
+## 🛠️ Problemas Comuns
+
+- **`connection failed ... banco de dados "..." não existe` / `password authentication failed`:** o banco ou o usuário do PostgreSQL não foram criados como no passo 1, ou as credenciais são diferentes. Crie-os ou defina a `DATABASE_URL` correta.
+- **Windows: `UnicodeDecodeError: 'utf-8' codec can't decode byte ...` em `base.py`:** acontecia com o driver antigo (`psycopg2`) quando o PostgreSQL em português recusava a conexão; a mensagem real ficava escondida. O projeto agora usa o `psycopg` 3, que mostra o erro corretamente. Se ainda aparecer, apague a `venv`, recrie-a e rode `pip install -r requirements.txt` de novo.
+
+---
+
 ## 📁 Estrutura dos Módulos da Aplicação
 
 - **`apps/catalogo/`**: Gerencia produtos (fofurinhos), tags, coleções, fotos e o controle de capacidade do `CicloEncomenda`.
 - **`apps/vendas/`**: Controla o carrinho de compras, checkout, cupons, pedidos e a `FilaProducao`.
 - **`apps/usuarios/`**: Gerencia perfis de usuários (`Cliente`, `Operador`, `Administrador`).
 - **`templates/`** e **`static/`**: Interface web responsiva com visualização em modal dinâmico e filtros interativos.
+
+---
+
+## ☁️ Deploy (produção)
+
+O script `build.sh` instala as dependências, coleta os arquivos estáticos (servidos pelo WhiteNoise) e aplica as migrações. No serviço de hospedagem, configure as variáveis de ambiente:
+
+| Variável | Valor |
+| :--- | :--- |
+| `DATABASE_URL` | URL de conexão do PostgreSQL de produção |
+| `DEBUG` | `False` (no Render já é o padrão) |
 
 ---
 
